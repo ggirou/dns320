@@ -1,113 +1,45 @@
 #!/bin/sh
-# Fun_plug pour chroot debian
-# By le_candide
-# Modifie le 08/03/2012
 
-# Activation de autoboot USB (O ou N)
-AUTOBOOT_USB=O
+# switch to safe working directory on ramdisk
+cd /
+
+# Boot on USB Key (1 or 0)
+USB_BOOT=1
+DISTRIB=squeeze-armel
+
 HD_MNT=/mnt/HD/HD_a2
 USB_MNT=/mnt/USB/HD_c1
-# DISTRIB=squeeze
-# DISTRIB=stretch-armel
-DISTRIB=squeeze-armel
-# DISTRIB=wheezy-armel
-# DISTRIB=jessie-armel
-# Emplacement de la distribution linux (normale et USB si necessaire)
-CHROOT=$HD_MNT/$DISTRIB
-CHROOT_USB=$USB_MNT/$DISTRIB
-# détermination de l emplacement du chroot
-# [ "$AUTOBOOT_USB" = "O" ] && [ -d $CHROOT_USB ] && CHROOT=$CHROOT_USB
-CHROOT=$CHROOT_USB
 
-# Modifier port du serveur web interne (O ou N)
-MDF_PORT_WEB=N
-# Emplacement fichier de config alternatif pour le serveur web interne
-confweb=$CHROOT/etc/lighttpd_portmod.conf
+# Tar file with debian bootstrap
+SOURCE=$HD_MNT/$DISTRIB.tar
+# Directory where decompress debian
+[ "$USB_BOOT" = "1" ] && DEST=$USB_MNT || DEST=$HD_MNT
 
-# Augmenter vitesse de transfert (O ou N) (pour firmware < 2.01b3)
-BOOST_LAN=N
+# Final chroot directory (tar file should have $DISTRIB directory)
+CHROOT=$DEST/$DISTRIB
 
-cd $HD_MNT
-
-# Fichier de traces
+# write a log, in case sth goes wrong
 rm $HD_MNT/ffp.log
 exec >> $HD_MNT/ffp.log 2>&1
-printf "\n\n`date '+[%d/%m/%Y %R]'` ------ Debut Demarrage DEBIAN DNS-320/325 ------\n"
-printf "Demarrage sur : $CHROOT\n"
 
-if mountpoint -q -- "$USB_MNT"; then
-  printf '%s\n' "$USB_MNT is a mount point"
+printf "\n\n`date '+[%d/%m/%Y %R]'` ------ Stating DEBIAN DNS-320/325 ------\n"
+printf "Starting on: $CHROOT\n"
+
+if [ "$USB_BOOT" = "1" ]; then
+   printf "\nWaiting USB Key $USB_MNT to be mounted\n"
+   local i=1; until df | grep $USB_MNT; do i=$((i*2)); echo sleep $i; sleep $i; done
+   printf "USB Key $USB_MNT mounted\n"
+
+   # ls -la $USB_MNT >> $HD_MNT/ffp.log 2>&1
 fi
 
-mountpoint -q $USB_MNT && printf "Mount\n" || printf "Not mounted\n"
+# Risky!
+# [ -f $CHROOT.reinstall ] && prinf "Remove $CHROOT" && rm -rf $CHROOT $CHROOT.reinstall >> $HD_MNT/ffp.log 2>&1
 
-printf "\n\nAttente du répertoire $USB_MNT \n"
-while [ ! -d $USB_MNT ]; do sleep 1; done
-printf "Répertoire $USB_MNT monté \n"
-
-ls -la $USB_MNT >> $HD_MNT/ffp.log 2>&1
-
-printf "\n\nAttente du fichier $USB_MNT/$DISTRIB.tar \n"
-while [ ! -f $USB_MNT/$DISTRIB.tar ]; do sleep 1; done
-printf "Fichier $USB_MNT/$DISTRIB.tar présent \n"
-
-mountpoint -q $USB_MNT && printf "Mount\n" || printf "Not mounted\n"
-
-if mountpoint -q -- "$USB_MNT"; then
-  printf '%s\n' "$USB_MNT is a mount point"
-fi
-
-ls -la $USB_MNT >> $HD_MNT/ffp.log 2>&1
-
-# rm -rf $USB_MNT/squeeze $USB_MNT/stable-armel $USB_MNT/$DISTRIB >> $HD_MNT/ffp.log 2>&1
-tar xf $USB_MNT/$DISTRIB.tar -C $USB_MNT >> $HD_MNT/ffp.log 2>&1
-# ########################
-
-# printf "rm -rf $HD_MNT/$DISTRIB\n"
-# rm -rf $HD_MNT/$DISTRIB >> $HD_MNT/ffp.log 2>&1
-
-# printf "find $CHROOT\n"
-# find $CHROOT >> $HD_MNT/ffp.log 2>&1
-# printf "############################\n"
-
-# printf "chmod $USB_MNT/$DISTRIB/\n"
-
-# printf "ls $USB_MNT/\n"
-# ls $USB_MNT/ >> $HD_MNT/ffp.log 2>&1
-
-# printf "tar xzf $DISTRIB.tar.gz -C $HD_MNT/\n"
-# $HD_MNT/tar xzf $DISTRIB.tar.gz -C $HD_MNT/  >> $HD_MNT/ffp.log 2>&1
-
-# printf "tar xzf $DISTRIB.tar.gz -C $USB_MNT/\n"
-# $HD_MNT/tar xzf $DISTRIB.tar.gz -C $USB_MNT/  >> $HD_MNT/ffp.log 2>&1
-
-# printf "\n\n`date '+[%d/%m/%Y %R]'` ------ Fin Demarrage DEBIAN DNS-320/325 ------\n"
-
-# exit
-# pwd  >> $HD_MNT/ffp.log 2>&1
-# ls  >> $HD_MNT/ffp.log 2>&1
-# ls /mnt/ >> $HD_MNT/ffp.log 2>&1
-# ls /mnt/USB/ >> $HD_MNT/ffp.log 2>&1
-# ls $USB_MNT/ >> $HD_MNT/ffp.log 2>&1
-# ls $USB_MNT/$DISTRIB/ >> $HD_MNT/ffp.log 2>&1
-
-# Modification du port du serveur web interne
-if [ "$MDF_PORT_WEB" = "O" ]; then
-   if [ -r $confweb ]; then
-      echo "killing  lighttpd-angel" ; kill -9 `pidof lighttpd-angel`
-      echo "killing  lighttpd" ; kill -9 `pidof lighttpd`
-      echo "redemarrage lighttpd-angel sur un port different"
-      /usr/sbin/lighttpd-angel -D -m /usr/local/lib -f $confweb &
-   else
-      echo "! Fichier $confweb absent -> modification port impossible"
-   fi
-fi
-
-# Optimisation vitesse de transfert
-if [ "$BOOST_LAN" = "O" ]; then
-   mount -t sysfs none /sys
-   l_blck="sdb sda sdb sdc mtdblock0 mtdblock1 mtdblock2 mtdblock3 mtdblock4 mtdblock5"
-   for blck in $l_blck ; do echo noop > /sys/block/$blck/queue/scheduler ; done
+if [ ! -d $CHROOT ]; then
+   printf "\nInstalling on $DEST...\n"
+   tar xf $SOURCE -C $DEST >> $HD_MNT/ffp.log 2>&1
+   $CHROOT/usr/sbin/chroot $CHROOT bash -c 'echo "root:dlink" | chpasswd' >> $HD_MNT/ffp.log 2>&1
 fi
 
 # Correction devices/droits/groupes/repertoires
@@ -133,10 +65,8 @@ hostname > $CHROOT/etc/hostname ; cp -f /etc/hosts $CHROOT/etc
 
 # Lancement environnement chroote
 chmod 600 $CHROOT/etc/ssh/* $CHROOT/var/run/sshd
-chmod 777 $CHROOT/boot/linuxrc $CHROOT/boot
+# chmod 777 $CHROOT/boot/linuxrc $CHROOT/boot
 # $CHROOT/boot/chroot $CHROOT /boot/linuxrc
 # $HD_MNT/chroot $CHROOT service ssh start
-$CHROOT/usr/sbin/chroot $CHROOT bash -c 'echo "root:dlink" | chpasswd' >> $HD_MNT/ffp.log 2>&1
-$CHROOT/usr/sbin/chroot $CHROOT cat /etc/issue >> $HD_MNT/ffp.log 2>&1
 $CHROOT/usr/sbin/chroot $CHROOT service ssh start >> $HD_MNT/ffp.log 2>&1
 printf "`date '+[%d/%m/%Y %R]'` ------ Fin Demarrage DEBIAN DNS-320/325 ------\n"
