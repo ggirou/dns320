@@ -1,0 +1,10 @@
+version: '3'
+services:
+  deboot:
+    build: .
+    volumes:
+      - "./dist:/dist"
+    command: ["armel", "squeeze", "http://archive.debian.org/debian/"]
+    # command: ["armel", "wheezy", "http://archive.debian.org/debian/"]
+    # command: ["armel", "jessie", "http://ftp.debian.org/debian/"]
+    # command: ["armel", "stretch", "http://ftp.debian.org/debian/"]
