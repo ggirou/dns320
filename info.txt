@@ -1,0 +1,410 @@
+$ uname -a
+Linux DNS320 2.6.22.18 #23 Wed May 25 15:48:30 CST 2011 armv5tejl GNU/Linux
+
+$ cat /proc/cpuinfo 
+Processor	: ARM926EJ-S rev 1 (v5l)
+BogoMIPS	: 791.34
+Features	: swp half thumb fastmult edsp 
+CPU implementer	: 0x56
+CPU architecture: 5TE
+CPU variant	: 0x2
+CPU part	: 0x131
+CPU revision	: 1
+Cache type	: write-back
+Cache clean	: cp15 c7 ops
+Cache lockdown	: format C
+Cache format	: Harvard
+I size		: 16384
+I assoc		: 4
+I line length	: 32
+I sets		: 128
+D size		: 16384
+D assoc		: 4
+D line length	: 32
+D sets		: 128
+
+Hardware	: Feroceon-KW
+Revision	: 0000
+Serial		: 0000000000000000
+
+$ dpkg --print-architecture
+armel
+
+$ mount
+%root% on / type unknown (rw)
+/dev/ram0 on / type ext2 (rw)
+proc on /proc type proc (rw)
+squash on /usr/local/tmp type ramfs (rw,size=29m)
+/usr/local/tmp/image.cfs on /usr/local/modules type squashfs (rw,loop=/dev/loop0)
+/dev/mtdblock5 on /usr/local/config type jffs2 (rw)
+/dev/sda4 on /mnt/HD_a4 type ext2 (rw)
+/dev/sdb4 on /mnt/HD_b4 type ext3 (rw)
+none on /proc/bus/usb type usbfs (rw)
+/dev/sda2 on /mnt/HD/HD_a2 type ext3 (rw,usrquota,grpquota,user_xattr)
+/dev/sdb2 on /mnt/HD/HD_b2 type ext3 (rw,usrquota,grpquota,user_xattr)
+nfsd on /proc/fs/nfsd type nfsd (rw)
+/dev/sdc1 on /mnt/USB/HD_c1 type ext3 (rw)
+
+$ env
+USER=root
+OLDPWD=/
+HOME=/
+TERM=vt102
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+RUNLEVEL=:::DB88FXX81:egiga0:none
+SHELL=/bin/sh
+PWD=/
+
+$ ls /sbin /usr/sbin /bin /usr/bin
+/bin:
+drwxr-xr-x    2 root     root         2.0k Jun 14  2012 .
+drwxr-xr-x   17 root     root         1.0k Jan  1  1970 ..
+lrwxrwxrwx    1 root     root            9 May 17  2010 addgroup -> tinylogin
+lrwxrwxrwx    1 root     root            9 May 17  2010 adduser -> tinylogin
+lrwxrwxrwx    1 root     root            7 May 17  2010 arping -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 ash -> busybox
+lrwxrwxrwx    1 root     root            7 Nov 17  2010 awk -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 basename -> busybox
+-rwxr-xr-x    1 root     root       302.9k Jun 14  2012 busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 cat -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 chgrp -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 chmod -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 chown -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 cmp -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 cp -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 crontab -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 date -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 dd -> busybox
+lrwxrwxrwx    1 root     root            9 May 17  2010 delgroup -> tinylogin
+lrwxrwxrwx    1 root     root            9 May 17  2010 deluser -> tinylogin
+lrwxrwxrwx    1 root     root            7 May 17  2010 df -> busybox
+lrwxrwxrwx    1 root     root            7 Oct  8  2010 dirname -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 dmesg -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 du -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 dumpleases -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 echo -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 egrep -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 env -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 expr -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 false -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 fgrep -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 find -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 free -> busybox
+lrwxrwxrwx    1 root     root            7 Apr 10  2012 fuser -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 goweb -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 grep -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 gunzip -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 gzip -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 head -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 hostname -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 id -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 kill -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 killall -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 ln -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 logger -> busybox
+lrwxrwxrwx    1 root     root            9 Jun 14  2012 login -> tinylogin
+lrwxrwxrwx    1 root     root            7 May 17  2010 ls -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 mkdir -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 mknod -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 more -> busybox
+-rwxr-xr-x    1 root     root       102.0k Sep 18  2009 mount
+lrwxrwxrwx    1 root     root            7 May 17  2010 mv -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 netstat -> busybox
+lrwxrwxrwx    1 root     root            9 Sep  6  2010 passwd -> tinylogin
+lrwxrwxrwx    1 root     root            7 May 17  2010 pidof -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 ping -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 ps -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 pwd -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 rm -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 rmdir -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 sed -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 sh -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 sleep -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 sync -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 tail -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 tar -> busybox
+-rwxr-xr-x    1 root     root        38.4k Jun 14  2012 tinylogin
+lrwxrwxrwx    1 root     root            7 May 17  2010 top -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 touch -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 true -> busybox
+-rwxr-xr-x    1 root     root        77.3k Sep 18  2009 umount
+lrwxrwxrwx    1 root     root            7 May 17  2010 uname -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 vi -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 wc -> busybox
+lrwxrwxrwx    1 root     root            7 May 17  2010 zcat -> busybox
+
+/sbin:
+drwxr-xr-x    2 root     root         1.0k Jan 13  2011 .
+drwxr-xr-x   17 root     root         1.0k Jan  1  1970 ..
+lrwxrwxrwx    1 root     root           14 May 17  2010 adjtimex -> ../bin/busybox
+lrwxrwxrwx    1 root     root           14 May 17  2010 crond -> ../bin/busybox
+lrwxrwxrwx    1 root     root           14 May 17  2010 dhcprelay -> ../bin/busybox
+lrwxrwxrwx    1 root     root           14 Nov 12  2010 getty -> ../bin/busybox
+lrwxrwxrwx    1 root     root           14 May 17  2010 halt -> ../bin/busybox
+-rwxr-xr-x    1 root     root         1.8k Sep 18  2009 hotplug
+lrwxrwxrwx    1 root     root           14 May 17  2010 ifconfig -> ../bin/busybox
+lrwxrwxrwx    1 root     root           14 May 17  2010 init -> ../bin/busybox
+lrwxrwxrwx    1 root     root           14 May 17  2010 logread -> ../bin/busybox
+lrwxrwxrwx    1 root     root           14 May 17  2010 mkswap -> ../bin/busybox
+lrwxrwxrwx    1 root     root           14 May 17  2010 modprobe -> ../bin/busybox
+lrwxrwxrwx    1 root     root           14 May 17  2010 poweroff -> ../bin/busybox
+lrwxrwxrwx    1 root     root           14 May 17  2010 rdate -> ../bin/busybox
+lrwxrwxrwx    1 root     root           14 May 17  2010 reboot -> ../bin/busybox
+lrwxrwxrwx    1 root     root           14 May 17  2010 route -> ../bin/busybox
+lrwxrwxrwx    1 root     root           14 May 17  2010 swapoff -> ../bin/busybox
+lrwxrwxrwx    1 root     root           14 May 17  2010 swapon -> ../bin/busybox
+lrwxrwxrwx    1 root     root           14 May 17  2010 syslogd -> ../bin/busybox
+lrwxrwxrwx    1 root     root           14 May 17  2010 udhcpc -> ../bin/busybox
+lrwxrwxrwx    1 root     root           14 May 17  2010 udhcpd -> ../bin/busybox
+
+/usr/bin:
+drwxr-xr-x    2 root     root         2.0k Jan  1  1970 .
+drwxr-xr-x    7 root     root         1.0k Jan  1  1970 ..
+lrwxrwxrwx    1 root     root           27 Jan  1  1970 afpd -> /usr/local/modules/bin/afpd
+lrwxrwxrwx    1 root     root           25 Jan  1  1970 at -> /usr/local/modules/bin/at
+lrwxrwxrwx    1 root     root           26 Jan  1  1970 atd -> /usr/local/modules/bin/atd
+lrwxrwxrwx    1 root     root           35 Jan  1  1970 avahi-daemon -> /usr/local/modules/bin/avahi-daemon
+lrwxrwxrwx    1 root     root           25 Jan  1  1970 cp -> /usr/local/modules/bin/cp
+lrwxrwxrwx    1 root     root           41 Jan  1  1970 detect_char_encode -> /usr/local/modules/bin/detect_char_encode
+lrwxrwxrwx    1 root     root           28 Jan  1  1970 djpeg -> /usr/local/modules/bin/djpeg
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 ez-ipupdate -> /usr/local/modules/bin/ez-ipupdate
+lrwxrwxrwx    1 root     root           28 Jan  1  1970 fdisk -> /usr/local/modules/bin/fdisk
+-rwxr-xr-x    1 root     root        12.2k Sep  2  2009 flash_eraseall
+lrwxrwxrwx    1 root     root           28 Jan  1  1970 gdisk -> /usr/local/modules/bin/gdisk
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 gpasswd -> /usr/local/modules/bin/gpasswd
+lrwxrwxrwx    1 root     root           29 Jan  1  1970 gunzip -> /usr/local/modules/bin/gunzip
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 imgconvert -> /usr/local/modules/bin/imgconvert
+lrwxrwxrwx    1 root     root           29 Jan  1  1970 insmod -> /usr/local/modules/bin/insmod
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 losetup -> /usr/local/modules/bin/losetup
+lrwxrwxrwx    1 root     root           26 Jan  1  1970 lpc -> /usr/local/modules/bin/lpc
+lrwxrwxrwx    1 root     root           26 Jan  1  1970 lpd -> /usr/local/modules/bin/lpd
+lrwxrwxrwx    1 root     root           26 Jan  1  1970 lpq -> /usr/local/modules/bin/lpq
+lrwxrwxrwx    1 root     root           26 Jan  1  1970 lpr -> /usr/local/modules/bin/lpr
+lrwxrwxrwx    1 root     root           27 Jan  1  1970 lprm -> /usr/local/modules/bin/lprm
+lrwxrwxrwx    1 root     root           28 Jan  1  1970 lsmod -> /usr/local/modules/bin/lsmod
+lrwxrwxrwx    1 root     root           28 Jan  1  1970 mdadm -> /usr/local/modules/bin/mdadm
+lrwxrwxrwx    1 root     root           29 Jan  1  1970 mke2fs -> /usr/local/modules/bin/mke2fs
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 mkfs.jffs2 -> /usr/local/modules/bin/mkfs.jffs2
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 mount.cifs -> /usr/local/modules/bin/mount.cifs
+lrwxrwxrwx    1 root     root           28 Jan  1  1970 msmtp -> /usr/local/modules/bin/msmtp
+lrwxrwxrwx    1 root     root           48 Jan  1  1970 mt-daapd -> /usr/local/modules/firefly/firefly/sbin/mt-daapd
+lrwxrwxrwx    1 root     root           27 Jan  1  1970 mutt -> /usr/local/modules/bin/mutt
+lrwxrwxrwx    1 root     root           40 Jan  1  1970 my_print_defaults -> /usr/local/modules/bin/my_print_defaults
+lrwxrwxrwx    1 root     root           28 Jan  1  1970 mysql -> /usr/local/modules/bin/mysql
+lrwxrwxrwx    1 root     root           39 Jan  1  1970 mysql_install_db -> /usr/local/modules/bin/mysql_install_db
+lrwxrwxrwx    1 root     root           48 Jan  1  1970 mysql_secure_installation -> /usr/local/modules/bin/mysql_secure_installation
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 mysqladmin -> /usr/local/modules/bin/mysqladmin
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 mysqld_safe -> /usr/local/modules/bin/mysqld_safe
+-rwxr--r--    1 root     root         9.8k Jul 28  2009 nanddump
+-rwxr-xr-x    1 root     root        14.4k Sep  2  2009 nandwrite
+lrwxrwxrwx    1 root     root           27 Jan  1  1970 nmbd -> /usr/local/modules/bin/nmbd
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 nmblookup -> /usr/local/modules/bin/nmblookup
+lrwxrwxrwx    1 root     root           28 Jan  1  1970 noip2 -> /usr/local/modules/bin/noip2
+lrwxrwxrwx    1 root     root           27 Jan  1  1970 perl -> /usr/local/modules/bin/perl
+lrwxrwxrwx    1 root     root           26 Jan  1  1970 php -> /usr/local/modules/bin/php
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 php-cgi -> /usr/local/modules/bin/php-cgi
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 pure-ftpd -> /usr/local/modules/bin/pure-ftpd
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 quotacheck -> /usr/local/modules/bin/quotacheck
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 quotaoff -> /usr/local/modules/bin/quotaon
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 quotaon -> /usr/local/modules/bin/quotaon
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 repquota -> /usr/local/modules/bin/repquota
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 resize2fs -> /usr/local/modules/bin/resize2fs
+lrwxrwxrwx    1 root     root           28 Jan  1  1970 rmmod -> /usr/local/modules/bin/rmmod
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 setquota -> /usr/local/modules/bin/setquota
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 sg_scan -> /usr/local/modules/bin/sg_scan
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 smartctl -> /usr/local/modules/bin/smartctl
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 smbclient -> /usr/local/modules/bin/smbclient
+lrwxrwxrwx    1 root     root           27 Jan  1  1970 smbd -> /usr/local/modules/bin/smbd
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 smbpasswd -> /usr/local/modules/bin/smbpasswd
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 userdel -> /usr/local/modules/bin/userdel
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 usermod -> /usr/local/modules/bin/usermod
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 utelnetd -> /usr/local/modules/bin/utelnetd
+lrwxrwxrwx    1 root     root           27 Jan  1  1970 wget -> /usr/local/modules/bin/wget
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 zeroconf -> /usr/local/modules/bin/zeroconf
+lrwxrwxrwx    1 root     root           26 Jan  1  1970 zip -> /usr/local/modules/bin/zip
+
+/usr/sbin:
+drwxr-xr-x    2 root     root         4.0k Jan  1  1970 .
+drwxr-xr-x    7 root     root         1.0k Jan  1  1970 ..
+lrwxrwxrwx    1 root     root           29 Jan  1  1970 802.3 -> /usr/local/modules/sbin/802.3
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 FT_testing -> /usr/local/modules/sbin/FT_testing
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 HDDStrCmp -> /usr/local/modules/sbin/HDDStrCmp
+lrwxrwxrwx    1 root     root           37 Jan  1  1970 SetTimeZone -> /usr/local/modules/script/SetTimeZone
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 UpdateDB -> /usr/local/modules/sbin/UpdateDB
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 account -> /usr/local/modules/sbin/account
+lrwxrwxrwx    1 root     root           45 Jan  1  1970 addons_follow-up.sh -> /usr/local/modules/script/addons_follow-up.sh
+lrwxrwxrwx    1 root     root           47 Jan  1  1970 addons_module_list.sh -> /usr/local/modules/script/addons_module_list.sh
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 addtbl -> /usr/local/modules/sbin/addtbl
+lrwxrwxrwx    1 root     root           29 Jan  1  1970 afp -> /usr/local/modules/script/afp
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 afpcom -> /usr/local/modules/sbin/afpcom
+lrwxrwxrwx    1 root     root           35 Jan  1  1970 afpscript -> /usr/local/modules/script/afpscript
+lrwxrwxrwx    1 root     root           27 Jan  1  1970 and -> /usr/local/modules/sbin/and
+lrwxrwxrwx    1 root     root           28 Jan  1  1970 apkg -> /usr/local/modules/sbin/apkg
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 atalkd -> /usr/local/modules/sbin/atalkd
+lrwxrwxrwx    1 root     root           36 Jan  1  1970 auto_prescan -> /usr/local/modules/sbin/auto_prescan
+lrwxrwxrwx    1 root     root           39 Jan  1  1970 avahi_restart -> /usr/local/modules/script/avahi_restart
+lrwxrwxrwx    1 root     root           37 Jan  1  1970 avahi_tm_serv -> /usr/local/modules/sbin/avahi_tm_serv
+lrwxrwxrwx    1 root     root           36 Jan  1  1970 chg_hostname -> /usr/local/modules/sbin/chg_hostname
+lrwxrwxrwx    1 root     root           35 Jan  1  1970 chk_blockip -> /usr/local/modules/sbin/chk_blockip
+lrwxrwxrwx    1 root     root           38 Jan  1  1970 chk_fun_plug -> /usr/local/modules/script/chk_fun_plug
+-rwxr-xr-x    1 root     root         7.9k Mar 31  2011 chk_image
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 chk_io -> /usr/local/modules/sbin/chk_io
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 chk_quota -> /usr/local/modules/sbin/chk_quota
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 config_set -> /usr/local/modules/sbin/config_set
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 ddns-start -> /usr/local/modules/sbin/ddns-start
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 deltbl -> /usr/local/modules/sbin/deltbl
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 diskmgr -> /usr/local/modules/sbin/diskmgr
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 do_reboot -> /usr/local/modules/sbin/do_reboot
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 e2fsck -> /usr/local/modules/sbin/e2fsck
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 exportfs -> /usr/local/modules/sbin/exportfs
+lrwxrwxrwx    1 root     root           35 Jan  1  1970 fan_control -> /usr/local/modules/sbin/fan_control
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 fanspeed -> /usr/local/modules/sbin/fanspeed
+lrwxrwxrwx    1 root     root           27 Jan  1  1970 ftp -> /usr/local/modules/sbin/ftp
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 fusermount -> /usr/local/modules/sbin/fusermount
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 getexip -> /usr/local/modules/sbin/getexip
+lrwxrwxrwx    1 root     root           42 Jan  1  1970 go_ajaxplorer.sh -> /usr/local/modules/script/go_ajaxplorer.sh
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 hd_verify -> /usr/local/modules/sbin/hd_verify
+lrwxrwxrwx    1 root     root           37 Jan  1  1970 hiddenmount -> /usr/local/modules/script/hiddenmount
+lrwxrwxrwx    1 root     root           38 Jan  1  1970 hiddenumount -> /usr/local/modules/script/hiddenumount
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 info.sh -> /usr/local/modules/script/info.sh
+lrwxrwxrwx    1 root     root           36 Jan  1  1970 inotify_upnp -> /usr/local/modules/sbin/inotify_upnp
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 ip.sh -> /usr/local/modules/script/ip.sh
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 iso_mount -> /usr/local/modules/sbin/iso_mount
+lrwxrwxrwx    1 root     root           35 Jan  1  1970 itunes.sh -> /usr/local/modules/script/itunes.sh
+lrwxrwxrwx    1 root     root           36 Jan  1  1970 judge_swap -> /usr/local/modules/script/judge_swap
+lrwxrwxrwx    1 root     root           46 Jan  1  1970 kill_running_process -> /usr/local/modules/script/kill_running_process
+lrwxrwxrwx    1 root     root           27 Jan  1  1970 led -> /usr/local/modules/sbin/led
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 lighttpd -> /usr/local/modules/sbin/lighttpd
+lrwxrwxrwx    1 root     root           38 Jan  1  1970 lighttpd-angel -> /usr/local/modules/sbin/lighttpd-angel
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 lighty -> /usr/local/modules/sbin/lighty
+-rwxr-xr-x    1 root     root          480 Jan  9  2009 linkfile
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 lltd.sh -> /usr/local/modules/script/lltd.sh
+lrwxrwxrwx    1 root     root           38 Jan  1  1970 load_default -> /usr/local/modules/script/load_default
+lrwxrwxrwx    1 root     root           37 Jan  1  1970 load_module -> /usr/local/modules/script/load_module
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 loadphp -> /usr/local/modules/sbin/loadphp
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 locale -> /usr/local/modules/sbin/locale
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 localedef -> /usr/local/modules/sbin/localedef
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 mac_read -> /usr/local/modules/sbin/mac_read
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 mac_write -> /usr/local/modules/sbin/mac_write
+lrwxrwxrwx    1 root     root           35 Jan  1  1970 mail_daemon -> /usr/local/modules/sbin/mail_daemon
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 maild -> /usr/local/modules/script/maild
+lrwxrwxrwx    1 root     root           38 Jan  1  1970 make_auth.sh -> /usr/local/modules/script/make_auth.sh
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 makedav -> /usr/local/modules/sbin/makedav
+lrwxrwxrwx    1 root     root           35 Jan  1  1970 megatec_usb -> /usr/local/modules/sbin/megatec_usb
+-rwxr-xr-x    1 root     root         6.3k Apr  1  2009 mem_rw
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 mfg_svr -> /usr/local/modules/sbin/mfg_svr
+lrwxrwxrwx    1 root     root           39 Jan  1  1970 mount_disk.sh -> /usr/local/modules/script/mount_disk.sh
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 mserver -> /usr/local/modules/sbin/mserver
+-rwxr-xr-x    1 root     root          951 Apr 10  2012 msw
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 msw4 -> /usr/local/modules/script/msw4
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 mtd_check -> /usr/local/modules/sbin/mtd_check
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 mycloud -> /usr/local/modules/sbin/mycloud
+lrwxrwxrwx    1 root     root           44 Jan  1  1970 mycloud_reloadConfig -> /usr/local/modules/sbin/mycloud_reloadConfig
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 mysqlmgr -> /usr/local/modules/sbin/mysqlmgr
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 network -> /usr/local/modules/sbin/network
+lrwxrwxrwx    1 root     root           27 Jan  1  1970 nfs -> /usr/local/modules/sbin/nfs
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 nfs_config -> /usr/local/modules/sbin/nfs_config
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 nfs_usb -> /usr/local/modules/sbin/nfs_usb
+lrwxrwxrwx    1 root     root           29 Jan  1  1970 noip2 -> /usr/local/modules/sbin/noip2
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 ntfs-3g -> /usr/local/modules/sbin/ntfs-3g
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 offl_chk -> /usr/local/modules/sbin/offl_chk
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 op_server -> /usr/local/modules/sbin/op_server
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 openssl -> /usr/local/modules/sbin/openssl
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 openssl-0.9.8 -> /usr/local/modules/sbin/openssl
+lrwxrwxrwx    1 root     root           36 Jan  1  1970 operate_auth -> /usr/local/modules/sbin/operate_auth
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 p2p.sh -> /usr/local/modules/script/p2p.sh
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 p2p_dog -> /usr/local/modules/sbin/p2p_dog
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 p2p_kill -> /usr/local/modules/sbin/p2p_kill
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 p2p_server -> /usr/local/modules/sbin/p2p_server
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 peanut -> /usr/local/modules/sbin/peanut
+lrwxrwxrwx    1 root     root           43 Jan  1  1970 portforwording.sh -> /usr/local/modules/script/portforwording.sh
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 portmap -> /usr/local/modules/sbin/portmap
+lrwxrwxrwx    1 root     root           44 Jan  1  1970 power_off_scheduling -> /usr/local/modules/sbin/power_off_scheduling
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 prescan -> /usr/local/modules/sbin/prescan
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 printer -> /usr/local/modules/script/printer
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 prtrscan -> /usr/local/modules/sbin/prtrscan
+lrwxrwxrwx    1 root     root           40 Jan  1  1970 quota_tab_backup -> /usr/local/modules/sbin/quota_tab_backup
+lrwxrwxrwx    1 root     root           35 Jan  1  1970 raidstart -> /usr/local/modules/script/raidstart
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 raidstop -> /usr/local/modules/script/raidstop
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 raidsync -> /usr/local/modules/script/raidsync
+lrwxrwxrwx    1 root     root           37 Jan  1  1970 raidsync_time -> /usr/local/modules/sbin/raidsync_time
+lrwxrwxrwx    1 root     root           38 Jan  1  1970 raidtab_parser -> /usr/local/modules/sbin/raidtab_parser
+lrwxrwxrwx    1 root     root           28 Jan  1  1970 rlog -> /usr/local/modules/sbin/rlog
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 rpc.mountd -> /usr/local/modules/sbin/rpc.mountd
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 rpc.nfsd -> /usr/local/modules/sbin/rpc.nfsd
+lrwxrwxrwx    1 root     root           35 Jan  1  1970 rsnapshot -> /usr/local/modules/script/rsnapshot
+lrwxrwxrwx    1 root     root           39 Jan  1  1970 rsnapshot_start -> /usr/local/modules/sbin/rsnapshot_start
+lrwxrwxrwx    1 root     root           29 Jan  1  1970 rss -> /usr/local/modules/script/rss
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 rss_daemon -> /usr/local/modules/sbin/rss_daemon
+lrwxrwxrwx    1 root     root           36 Jan  1  1970 rss_download -> /usr/local/modules/sbin/rss_download
+lrwxrwxrwx    1 root     root           35 Jan  1  1970 rss_perform -> /usr/local/modules/sbin/rss_perform
+lrwxrwxrwx    1 root     root           38 Jan  1  1970 rss_updateInfo -> /usr/local/modules/sbin/rss_updateInfo
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 rsync -> /usr/local/modules/rsync/rsync
+lrwxrwxrwx    1 root     root           35 Jan  1  1970 rsync-start -> /usr/local/modules/sbin/rsync-start
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 rsyncmd -> /usr/local/modules/sbin/rsyncmd
+lrwxrwxrwx    1 root     root           35 Jan  1  1970 rsyncmd.sh -> /usr/local/modules/rsync/rsyncmd.sh
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 rsyncom -> /usr/local/modules/sbin/rsyncom
+lrwxrwxrwx    1 root     root           27 Jan  1  1970 rtc -> /usr/local/modules/sbin/rtc
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 run_wget -> /usr/local/modules/script/run_wget
+lrwxrwxrwx    1 root     root           26 Jan  1  1970 s3 -> /usr/local/modules/sbin/s3
+lrwxrwxrwx    1 root     root           36 Jan  1  1970 sata_hotplug -> /usr/local/modules/sbin/sata_hotplug
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 sata_test -> /usr/local/modules/sbin/sata_test
+lrwxrwxrwx    1 root     root           35 Jan  1  1970 satamount -> /usr/local/modules/script/satamount
+lrwxrwxrwx    1 root     root           36 Jan  1  1970 sataumount -> /usr/local/modules/script/sataumount
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 save_mtd -> /usr/local/modules/sbin/save_mtd
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 scandisk -> /usr/local/modules/sbin/scandisk
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 scheddler -> /usr/local/modules/sbin/scheddler
+lrwxrwxrwx    1 root     root           41 Jan  1  1970 scsi_disk.agent -> /usr/local/modules/script/scsi_disk.agent
+lrwxrwxrwx    1 root     root           39 Jan  1  1970 scsiproc_parser -> /usr/local/modules/sbin/scsiproc_parser
+lrwxrwxrwx    1 root     root           35 Jan  1  1970 scsistart -> /usr/local/modules/script/scsistart
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 scsistop -> /usr/local/modules/script/scsistop
+lrwxrwxrwx    1 root     root           37 Jan  1  1970 send_gen_mail -> /usr/local/modules/sbin/send_gen_mail
+lrwxrwxrwx    1 root     root           47 Jan  1  1970 send_mail_event_at_cron -> /usr/local/modules/sbin/send_mail_event_at_cron
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 send_sms -> /usr/local/modules/sbin/send_sms
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 set_ddns -> /usr/local/modules/script/set_ddns
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 shutdown -> /usr/local/modules/script/shutdown
+lrwxrwxrwx    1 root     root           42 Jan  1  1970 smart_ch_hd_result -> /usr/local/modules/sbin/smart_ch_hd_result
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 smart_test -> /usr/local/modules/sbin/smart_test
+lrwxrwxrwx    1 root     root           29 Jan  1  1970 smb -> /usr/local/modules/script/smb
+lrwxrwxrwx    1 root     root           29 Jan  1  1970 smbac -> /usr/local/modules/sbin/smbac
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 smbcmd -> /usr/local/modules/sbin/smbcmd
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 smbcom -> /usr/local/modules/sbin/smbcom
+lrwxrwxrwx    1 root     root           29 Jan  1  1970 smbcv -> /usr/local/modules/sbin/smbcv
+lrwxrwxrwx    1 root     root           28 Jan  1  1970 sntp -> /usr/local/modules/sbin/sntp
+lrwxrwxrwx    1 root     root           28 Jan  1  1970 ssh -> /usr/local/modules/rsync/ssh
+lrwxrwxrwx    1 root     root           35 Jan  1  1970 ssh-keygen -> /usr/local/modules/rsync/ssh-keygen
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 ssh_daemon -> /usr/local/modules/sbin/ssh_daemon
+lrwxrwxrwx    1 root     root           29 Jan  1  1970 sshd -> /usr/local/modules/rsync/sshd
+lrwxrwxrwx    1 root     root           37 Jan  1  1970 startup-mysql -> /usr/local/modules/sbin/startup-mysql
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 stime -> /usr/local/modules/script/stime
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 swapup -> /usr/local/modules/script/swapup
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 syncUsers -> /usr/local/modules/sbin/syncUsers
+lrwxrwxrwx    1 root     root           31 Jan  1  1970 syslogd -> /usr/local/modules/sbin/syslogd
+lrwxrwxrwx    1 root     root           37 Jan  1  1970 system_daemon -> /usr/local/modules/sbin/system_daemon
+lrwxrwxrwx    1 root     root           37 Jan  1  1970 system_init -> /usr/local/modules/script/system_init
+lrwxrwxrwx    1 root     root           54 Jan  1  1970 unload_usb_storage_driver.sh -> /usr/local/modules/script/unload_usb_storage_driver.sh
+lrwxrwxrwx    1 root     root           45 Jan  1  1970 untar_backupfile.sh -> /usr/local/modules/script/untar_backupfile.sh
+lrwxrwxrwx    1 root     root           38 Jan  1  1970 update_uboot -> /usr/local/modules/script/update_uboot
+lrwxrwxrwx    1 root     root           35 Jan  1  1970 upload_apkg -> /usr/local/modules/sbin/upload_apkg
+lrwxrwxrwx    1 root     root           39 Jan  1  1970 upload_firmware -> /usr/local/modules/sbin/upload_firmware
+lrwxrwxrwx    1 root     root           28 Jan  1  1970 upnp -> /usr/local/modules/sbin/upnp
+lrwxrwxrwx    1 root     root           36 Jan  1  1970 upnp_av.sh -> /usr/local/modules/script/upnp_av.sh
+lrwxrwxrwx    1 root     root           36 Jan  1  1970 upnp_igdctrl -> /usr/local/modules/sbin/upnp_igdctrl
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 upnpdbmgr -> /usr/local/modules/sbin/upnpdbmgr
+lrwxrwxrwx    1 root     root           39 Jan  1  1970 ups_action.sh -> /usr/local/modules/script/ups_action.sh
+lrwxrwxrwx    1 root     root           28 Jan  1  1970 upsc -> /usr/local/modules/sbin/upsc
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 upscan -> /usr/local/modules/sbin/upscan
+lrwxrwxrwx    1 root     root           28 Jan  1  1970 upsd -> /usr/local/modules/sbin/upsd
+lrwxrwxrwx    1 root     root           33 Jan  1  1970 upsdrvctl -> /usr/local/modules/sbin/upsdrvctl
+lrwxrwxrwx    1 root     root           30 Jan  1  1970 upsmon -> /usr/local/modules/sbin/upsmon
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 upssched -> /usr/local/modules/sbin/upssched
+lrwxrwxrwx    1 root     root           36 Jan  1  1970 upssched-cmd -> /usr/local/modules/sbin/upssched-cmd
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 usb_disk -> /usr/local/modules/sbin/usb_disk
+lrwxrwxrwx    1 root     root           32 Jan  1  1970 usb_test -> /usr/local/modules/sbin/usb_test
+lrwxrwxrwx    1 root     root           34 Jan  1  1970 usbmount -> /usr/local/modules/script/usbmount
+lrwxrwxrwx    1 root     root           35 Jan  1  1970 usbumount -> /usr/local/modules/script/usbumount
+lrwxrwxrwx    1 root     root           38 Jan  1  1970 usbumountall -> /usr/local/modules/script/usbumountall
+lrwxrwxrwx    1 root     root           38 Jan  1  1970 usbunloaddrv -> /usr/local/modules/script/usbunloaddrv
+lrwxrwxrwx    1 root     root           41 Jan  1  1970 webdav_nfs_rewind -> /usr/local/modules/sbin/webdav_nfs_rewind
+lrwxrwxrwx    1 root     root           29 Jan  1  1970 xmldb -> /usr/local/modules/sbin/xmldb
+lrwxrwxrwx    1 root     root           29 Jan  1  1970 xmldbc -> /usr/local/modules/sbin/xmldb

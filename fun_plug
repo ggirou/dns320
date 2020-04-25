@@ -1,4 +1,11 @@
-#!/bin/sh
+#!/bin/sh -ex
+
+if [ -z "$LOGGING" ]
+then 
+   # write a log, in case sth goes wrong
+   LOGGING=1 /bin/sh -e "$0" "$@" > /mnt/HD/HD_a2/ffp.log 2>&1
+   exit 0
+fi
 
 # switch to safe working directory on ramdisk
 cd /
@@ -18,28 +25,64 @@ SOURCE=$HD_MNT/$DISTRIB.tar
 # Final chroot directory (tar file should have $DISTRIB directory)
 CHROOT=$DEST/$DISTRIB
 
-# write a log, in case sth goes wrong
-rm $HD_MNT/ffp.log
-exec >> $HD_MNT/ffp.log 2>&1
+# usbmount script to be patched (1 or 0)
+PATCH_USBMOUNT=1
+USBMOUNT_FILE=/usr/local/modules/script/usbmount
+CONFIG_DIR=/usr/local/config
+RCINIT_FILE=$CONFIG_DIR/rc.init.sh
 
-printf "\n\n`date '+[%d/%m/%Y %R]'` ------ Stating DEBIAN DNS-320/325 ------\n"
-printf "Starting on: $CHROOT\n"
+echo "`date '+[%d/%m/%Y %R]'` ------ Stating DEBIAN DNS-320/325 ------"
+echo "Starting on: $CHROOT"
+
+if [ "$PATCH_USBMOUNT" = "1" ]; then
+   echo "Patching USB mount..."
+
+   echo "Create $CONFIG_DIR/usbpatch.sh"
+   cat <<EOF > $CONFIG_DIR/usbpatch.sh
+#!/bin/sh -ex
+echo "Patching $USBMOUNT_FILE: disable chmod -R a+w on USB mount..."
+cp -pf $USBMOUNT_FILE /tmp/`basename $USBMOUNT_FILE`
+sed -i 's/chmod -R/#chmod -R/' /tmp/`basename $USBMOUNT_FILE`
+mount -n --bind /tmp/`basename $USBMOUNT_FILE` $USBMOUNT_FILE
+echo "$USBMOUNT_FILE patched"
+EOF
+
+   [ ! -f $RCINIT_FILE.bak ] \
+      && "Backup $RCINIT_FILE to $RCINIT_FILE.bak" \
+      && cp -pf $RCINIT_FILE $RCINIT_FILE.bak
+
+   grep 'usbpatch.sh' $RCINIT_FILE \
+     && echo "$RCINIT_FILE already patched" \
+     || echo "sh -ex $CONFIG_DIR/usbpatch.sh > $CONFIG_DIR/usbpatch.log" >> $RCINIT_FILE
+
+   # cat $RCINIT_FILE
+   # cat $CONFIG_DIR/usbpatch.sh
+   # cat /usr/local/config/usbpatch.log || true
+   # cat $USBMOUNT_FILE | grep 'chmod -R'
+   echo "USB mount patched..."
+else
+   echo "Restore backup from /usr/local/modules/default/rc.init.sh"
+   cp -pf /usr/local/modules/default/rc.init.sh $CONFIG_DIR
+   [ -f $CONFIG_DIR/usbpatch.sh ] && echo "Remove $CONFIG_DIR/usbpatch.sh" && rm $CONFIG_DIR/usbpatch.sh
+fi
 
 if [ "$USB_BOOT" = "1" ]; then
-   printf "\nWaiting USB Key $USB_MNT to be mounted\n"
+   echo "Waiting USB Key $USB_MNT to be mounted"
    local i=1; until df | grep $USB_MNT; do i=$((i*2)); echo sleep $i; sleep $i; done
-   printf "USB Key $USB_MNT mounted\n"
+   echo "USB Key $USB_MNT mounted"
 
-   # ls -la $USB_MNT >> $HD_MNT/ffp.log 2>&1
+   # ls -la $USB_MNT
 fi
 
 # Risky!
-# [ -f $CHROOT.reinstall ] && prinf "Remove $CHROOT" && rm -rf $CHROOT $CHROOT.reinstall >> $HD_MNT/ffp.log 2>&1
+[ -f $CHROOT.reinstall ] && echo "Remove $CHROOT" && echo rm -rf $CHROOT $CHROOT.reinstall
 
 if [ ! -d $CHROOT ]; then
-   printf "\nInstalling on $DEST...\n"
-   tar xf $SOURCE -C $DEST >> $HD_MNT/ffp.log 2>&1
-   $CHROOT/usr/sbin/chroot $CHROOT bash -c 'echo "root:dlink" | chpasswd' >> $HD_MNT/ffp.log 2>&1
+   echo "Installing on $DEST..."
+   tar xf $SOURCE -C $DEST
+   $CHROOT/usr/sbin/chroot $CHROOT bash -c 'echo "root:dlink" | chpasswd'
+
+   # ls -la $CHROOT
 fi
 
 # Correction devices/droits/groupes/repertoires
@@ -52,8 +95,13 @@ chmod 0666 /dev/tty /dev/null ; chmod 1777 /tmp
 touch /var/run/utmp /var/log/btmp /var/log/lastlog /var/log/wtmp
 
 # Mount repertoires systemes dans environement chroote
-mkdir -p $CHROOT/mnt/root; mount -n --bind / $CHROOT/mnt/root ; mount -n --bind /dev  $CHROOT/dev
-mount -n --bind /sys  $CHROOT/sys  ; mount -n --bind /proc $CHROOT/proc
+mkdir -p $CHROOT/mnt/root $CHROOT/mnt/config $CHROOT/mnt/modules
+mount -n --bind / $CHROOT/mnt/root
+mount -n --bind /usr/local/config $CHROOT/mnt/config || true
+mount -n --bind /usr/local/modules $CHROOT/mnt/modules || true
+mount -n --bind /dev $CHROOT/dev
+mount -n --bind /sys  $CHROOT/sys
+mount -n --bind /proc $CHROOT/proc
 for DISK in `mount|awk '$3~"/mnt/"{print $3}'`; do
    if [ -d $DISK ] ; then mkdir -p $CHROOT/$DISK ; mount -n --bind $DISK $CHROOT/$DISK ; fi
 done
@@ -64,9 +112,10 @@ touch $CHROOT/etc/fstab ; cp -f /etc/resolv.conf $CHROOT/etc
 hostname > $CHROOT/etc/hostname ; cp -f /etc/hosts $CHROOT/etc
 
 # Lancement environnement chroote
-chmod 600 $CHROOT/etc/ssh/* $CHROOT/var/run/sshd
+# chmod -R 600 $CHROOT/etc/ssh/ $CHROOT/var/run/sshd
 # chmod 777 $CHROOT/boot/linuxrc $CHROOT/boot
 # $CHROOT/boot/chroot $CHROOT /boot/linuxrc
 # $HD_MNT/chroot $CHROOT service ssh start
-$CHROOT/usr/sbin/chroot $CHROOT service ssh start >> $HD_MNT/ffp.log 2>&1
-printf "`date '+[%d/%m/%Y %R]'` ------ Fin Demarrage DEBIAN DNS-320/325 ------\n"
+$CHROOT/usr/sbin/chroot $CHROOT service ssh start
+
+echo "`date '+[%d/%m/%Y %R]'` ------ Fin Demarrage DEBIAN DNS-320/325 ------"
