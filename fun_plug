@@ -1,16 +1,6 @@
 #!/bin/sh -ex
 
-if [ -z "$LOGGING" ]
-then 
-   # write a log, in case sth goes wrong
-   LOGGING=1 /bin/sh -e "$0" "$@" > /mnt/HD/HD_a2/ffp.log 2>&1
-   exit 0
-fi
-
-# switch to safe working directory on ramdisk
-cd /
-
-# Enable telnet daemon (1 or 0)
+# Enable telnet daemon for debugging only (1 or 0)
 TELNETD=1
 
 # Boot on USB Key (1 or 0)
@@ -29,30 +19,28 @@ SOURCE=$HD_MNT/$DISTRIB.tar
 CHROOT=$DEST/$DISTRIB
 
 # usbmount script to be patched (1 or 0)
-PATCH_USBMOUNT=1
-USBMOUNT_FILE=/usr/local/modules/script/usbmount
+PATCH_USBCHMOD=1
 CONFIG_DIR=/usr/local/config
 RCINIT_FILE=$CONFIG_DIR/rc.init.sh
 
+if [ -z "$LOGGING" ]; then 
+   # write a log, in case sth goes wrong
+   LOGGING=1 /bin/sh -e "$0" "$@" > /mnt/HD/HD_a2/ffp.log 2>&1
+   exit 0
+fi
+
 echo "`date '+[%d/%m/%Y %R]'` ------ Stating DNS-320 ------"
+
+# switch to safe working directory on ramdisk
+cd /
 
 if [ "$TELNETD" = "1" ]; then
    echo "Starting telnet daemon..."
    utelnetd -l /bin/sh -d
 fi
 
-if [ "$PATCH_USBMOUNT" = "1" ]; then
+if [ "$PATCH_USBCHMOD" = "1" ]; then
    echo "Patching USB mount..."
-
-#    echo "Create $CONFIG_DIR/usbpatch.sh"
-#    cat <<EOF > $CONFIG_DIR/usbpatch.sh
-# #!/bin/sh -ex
-# echo "Patching $USBMOUNT_FILE: disable chmod -R a+w on USB mount..."
-# cp -pf $USBMOUNT_FILE /tmp/`basename $USBMOUNT_FILE`
-# sed -i 's/chmod -R/echo chmod -R/' /tmp/`basename $USBMOUNT_FILE`
-# mount -n --bind /tmp/`basename $USBMOUNT_FILE` $USBMOUNT_FILE
-# echo "$USBMOUNT_FILE patched"
-# EOF
 
    cat <<EOF > $CONFIG_DIR/chmod
 #!/bin/sh
@@ -62,27 +50,17 @@ if [ "$PATCH_USBMOUNT" = "1" ]; then
 EOF
    chmod a+x $CONFIG_DIR/chmod
 
-   # [ ! -f $RCINIT_FILE.bak ] \
-   #    && "Backup $RCINIT_FILE to $RCINIT_FILE.bak" \
-   #    && cp -pf $RCINIT_FILE $RCINIT_FILE.bak
-
-   # grep 'usbpatch.sh' $RCINIT_FILE \
-   #   && echo "$RCINIT_FILE already patched" \
-   #   || echo "sh -ex $CONFIG_DIR/usbpatch.sh > $CONFIG_DIR/usbpatch.log" >> $RCINIT_FILE
-
    grep "$CONFIG_DIR/chmod" $RCINIT_FILE \
      && echo "$RCINIT_FILE already patched" \
      || echo "[ -x $CONFIG_DIR/chmod ] && ln -nfs $CONFIG_DIR/chmod /bin/chmod > $CONFIG_DIR/chmod.log" >> $RCINIT_FILE
 
    # cat $RCINIT_FILE
-   # cat $CONFIG_DIR/usbpatch.sh
-   # cat /usr/local/config/usbpatch.log || true
-   # cat $USBMOUNT_FILE | grep 'chmod -R'
+   # cat $CONFIG_DIR/chmod
+   # cat $CONFIG_DIR/chmod.log || true
    echo "USB mount patched..."
 else
    echo "Restore backup from /usr/local/modules/default/rc.init.sh"
    cp -pf /usr/local/modules/default/rc.init.sh $CONFIG_DIR
-   # [ -f $CONFIG_DIR/usbpatch.sh ] && echo "Remove $CONFIG_DIR/usbpatch.sh" && rm $CONFIG_DIR/usbpatch.sh
    [ -f $CONFIG_DIR/chmod ] && echo "Remove $CONFIG_DIR/chmod" && rm $CONFIG_DIR/chmod
 fi
 
@@ -94,8 +72,8 @@ if [ "$USB_BOOT" = "1" ]; then
    # ls -la $USB_MNT
 fi
 
-# Risky!
-[ -f $CHROOT.reinstall ] && echo "Remove $CHROOT" && rm -rf $CHROOT $CHROOT.reinstall
+# Remove to reinstall
+[ -f $CHROOT.reinstall ] && echo "Remove $CHROOT to reinstall" && rm -rf $CHROOT $CHROOT.reinstall
 
 if [ ! -d $CHROOT ]; then
    echo "Installing on $DEST..."
@@ -134,10 +112,7 @@ hostname > $CHROOT/etc/hostname ; cp -f /etc/hosts $CHROOT/etc
 # Lancement environnement chroote
 echo "Starting on: $CHROOT"
 
-# chmod -R 600 $CHROOT/etc/ssh/ $CHROOT/var/run/sshd # FIXME
-# chmod 777 $CHROOT/boot/linuxrc $CHROOT/boot
-# $CHROOT/boot/chroot $CHROOT /boot/linuxrc
-# $HD_MNT/chroot $CHROOT service ssh start
+# chmod -R 600 $CHROOT/etc/ssh/ $CHROOT/var/run/sshd
 $CHROOT/usr/sbin/chroot $CHROOT service ssh start
 
-echo "`date '+[%d/%m/%Y %R]'` ------ Fin Demarrage DNS-320 ------"
+echo "`date '+[%d/%m/%Y %R]'` ------ DNS-320 started ------"
