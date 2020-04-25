@@ -10,6 +10,9 @@ fi
 # switch to safe working directory on ramdisk
 cd /
 
+# Enable telnet daemon (1 or 0)
+TELNETD=1
+
 # Boot on USB Key (1 or 0)
 USB_BOOT=1
 DISTRIB=squeeze-armel
@@ -31,29 +34,45 @@ USBMOUNT_FILE=/usr/local/modules/script/usbmount
 CONFIG_DIR=/usr/local/config
 RCINIT_FILE=$CONFIG_DIR/rc.init.sh
 
-echo "`date '+[%d/%m/%Y %R]'` ------ Stating DEBIAN DNS-320/325 ------"
-echo "Starting on: $CHROOT"
+echo "`date '+[%d/%m/%Y %R]'` ------ Stating DNS-320 ------"
+
+if [ "$TELNETD" = "1" ]; then
+   echo "Starting telnet daemon..."
+   utelnetd -l /bin/sh -d
+fi
 
 if [ "$PATCH_USBMOUNT" = "1" ]; then
    echo "Patching USB mount..."
 
-   echo "Create $CONFIG_DIR/usbpatch.sh"
-   cat <<EOF > $CONFIG_DIR/usbpatch.sh
-#!/bin/sh -ex
-echo "Patching $USBMOUNT_FILE: disable chmod -R a+w on USB mount..."
-cp -pf $USBMOUNT_FILE /tmp/`basename $USBMOUNT_FILE`
-sed -i 's/chmod -R/#chmod -R/' /tmp/`basename $USBMOUNT_FILE`
-mount -n --bind /tmp/`basename $USBMOUNT_FILE` $USBMOUNT_FILE
-echo "$USBMOUNT_FILE patched"
+#    echo "Create $CONFIG_DIR/usbpatch.sh"
+#    cat <<EOF > $CONFIG_DIR/usbpatch.sh
+# #!/bin/sh -ex
+# echo "Patching $USBMOUNT_FILE: disable chmod -R a+w on USB mount..."
+# cp -pf $USBMOUNT_FILE /tmp/`basename $USBMOUNT_FILE`
+# sed -i 's/chmod -R/echo chmod -R/' /tmp/`basename $USBMOUNT_FILE`
+# mount -n --bind /tmp/`basename $USBMOUNT_FILE` $USBMOUNT_FILE
+# echo "$USBMOUNT_FILE patched"
+# EOF
+
+   cat <<EOF > $CONFIG_DIR/chmod
+#!/bin/sh
+{ echo chmod \$@; echo From PID \$PPID: ; ps | egrep "^ \$PPID[ ]"; } >> $CONFIG_DIR/chmod.log
+[[ "\$*" == "777 -R $USB_MNT" ]] && echo Ignored by $CONFIG_DIR/chmod && echo Ignored >> $CONFIG_DIR/chmod.log && exit
+/bin/busybox chmod \$@
 EOF
+   chmod a+x $CONFIG_DIR/chmod
 
-   [ ! -f $RCINIT_FILE.bak ] \
-      && "Backup $RCINIT_FILE to $RCINIT_FILE.bak" \
-      && cp -pf $RCINIT_FILE $RCINIT_FILE.bak
+   # [ ! -f $RCINIT_FILE.bak ] \
+   #    && "Backup $RCINIT_FILE to $RCINIT_FILE.bak" \
+   #    && cp -pf $RCINIT_FILE $RCINIT_FILE.bak
 
-   grep 'usbpatch.sh' $RCINIT_FILE \
+   # grep 'usbpatch.sh' $RCINIT_FILE \
+   #   && echo "$RCINIT_FILE already patched" \
+   #   || echo "sh -ex $CONFIG_DIR/usbpatch.sh > $CONFIG_DIR/usbpatch.log" >> $RCINIT_FILE
+
+   grep "$CONFIG_DIR/chmod" $RCINIT_FILE \
      && echo "$RCINIT_FILE already patched" \
-     || echo "sh -ex $CONFIG_DIR/usbpatch.sh > $CONFIG_DIR/usbpatch.log" >> $RCINIT_FILE
+     || echo "[ -x $CONFIG_DIR/chmod ] && ln -nfs $CONFIG_DIR/chmod /bin/chmod > $CONFIG_DIR/chmod.log" >> $RCINIT_FILE
 
    # cat $RCINIT_FILE
    # cat $CONFIG_DIR/usbpatch.sh
@@ -63,19 +82,20 @@ EOF
 else
    echo "Restore backup from /usr/local/modules/default/rc.init.sh"
    cp -pf /usr/local/modules/default/rc.init.sh $CONFIG_DIR
-   [ -f $CONFIG_DIR/usbpatch.sh ] && echo "Remove $CONFIG_DIR/usbpatch.sh" && rm $CONFIG_DIR/usbpatch.sh
+   # [ -f $CONFIG_DIR/usbpatch.sh ] && echo "Remove $CONFIG_DIR/usbpatch.sh" && rm $CONFIG_DIR/usbpatch.sh
+   [ -f $CONFIG_DIR/chmod ] && echo "Remove $CONFIG_DIR/chmod" && rm $CONFIG_DIR/chmod
 fi
 
 if [ "$USB_BOOT" = "1" ]; then
    echo "Waiting USB Key $USB_MNT to be mounted"
-   local i=1; until df | grep $USB_MNT; do i=$((i*2)); echo sleep $i; sleep $i; done
-   echo "USB Key $USB_MNT mounted"
+   local i=1; until df | grep $USB_MNT || [[ $i -gt 30 ]] ; do i=$((i*2)); echo sleep $i; sleep $i; done
+   df | grep $USB_MNT > /dev/null && echo "USB Key $USB_MNT mounted" || (echo "Failed to mount USB Key $USB_MNT" && exit)
 
    # ls -la $USB_MNT
 fi
 
 # Risky!
-[ -f $CHROOT.reinstall ] && echo "Remove $CHROOT" && echo rm -rf $CHROOT $CHROOT.reinstall
+[ -f $CHROOT.reinstall ] && echo "Remove $CHROOT" && rm -rf $CHROOT $CHROOT.reinstall
 
 if [ ! -d $CHROOT ]; then
    echo "Installing on $DEST..."
@@ -95,10 +115,10 @@ chmod 0666 /dev/tty /dev/null ; chmod 1777 /tmp
 touch /var/run/utmp /var/log/btmp /var/log/lastlog /var/log/wtmp
 
 # Mount repertoires systemes dans environement chroote
-mkdir -p $CHROOT/mnt/root $CHROOT/mnt/config $CHROOT/mnt/modules
+mkdir -p $CHROOT/mnt/root $CHROOT/mnt/root/usr/local/config $CHROOT/mnt/root/usr/local/modules
 mount -n --bind / $CHROOT/mnt/root
-mount -n --bind /usr/local/config $CHROOT/mnt/config || true
-mount -n --bind /usr/local/modules $CHROOT/mnt/modules || true
+mount -n --bind /usr/local/config $CHROOT/mnt/root/usr/local/config
+mount -n --bind /usr/local/modules $CHROOT/mnt/root/usr/local/modules
 mount -n --bind /dev $CHROOT/dev
 mount -n --bind /sys  $CHROOT/sys
 mount -n --bind /proc $CHROOT/proc
@@ -112,10 +132,12 @@ touch $CHROOT/etc/fstab ; cp -f /etc/resolv.conf $CHROOT/etc
 hostname > $CHROOT/etc/hostname ; cp -f /etc/hosts $CHROOT/etc
 
 # Lancement environnement chroote
-# chmod -R 600 $CHROOT/etc/ssh/ $CHROOT/var/run/sshd
+echo "Starting on: $CHROOT"
+
+# chmod -R 600 $CHROOT/etc/ssh/ $CHROOT/var/run/sshd # FIXME
 # chmod 777 $CHROOT/boot/linuxrc $CHROOT/boot
 # $CHROOT/boot/chroot $CHROOT /boot/linuxrc
 # $HD_MNT/chroot $CHROOT service ssh start
 $CHROOT/usr/sbin/chroot $CHROOT service ssh start
 
-echo "`date '+[%d/%m/%Y %R]'` ------ Fin Demarrage DEBIAN DNS-320/325 ------"
+echo "`date '+[%d/%m/%Y %R]'` ------ Fin Demarrage DNS-320 ------"
