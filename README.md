@@ -6,12 +6,12 @@ Run debian on DNS320
 - Wikis: http://dns323.kood.org/dns-320
 - Linux kernel support: https://www.kernel.org/doc/html/latest/arm/marvel.html
 
-With fun_plug
--------------
+With Serial boot
+----------------
 
 # Deboostrap debian
 
-    docker-compose up deboot
+    docker-compose run deboot
 
 ## Debug/Testing
 
@@ -22,25 +22,78 @@ With fun_plug
 # Prepare USB key
 
 ## Format to ext2
+    
+    # Optionnal, recreate MBR partition
+    sudo apt-get install mbr
+    sudo install-mbr /dev/sda
 
+    # Create and formate axt2 partition
+    # echo ";" | sudo sfdisk /dev/sda
     sudo parted -l
     sudo parted /dev/sda rm 1
+    sudo parted /dev/sda mklabel msdos
     sudo parted -a optimal /dev/sda mkpart primary 0% 100%
-    sudo mkfs -t ext2 /dev/sda1
+    #sudo parted -a minimal /dev/sda mkpart primary 0% 100%
+    sudo parted /dev/sda set 1 boot on
+
+    sudo mkfs.ext2 /dev/sda1
+
+    # Optionnal, chek bad blocks and fix it
+    sudo badblocks -s -w -t 0 /dev/sda1 > badsectors.txt
+    sudo e2fsck -y -l badsectors.txt /dev/sda1
 
 ## Extract Debian
 
     sudo mkdir -p /mnt/usb/
     sudo mount /dev/sda1 /mnt/usb/
     sudo tar xzf ~/buster-armel.final.tar.gz -C /mnt/usb/
-    
+    ls -la /mnt/usb/
+    sudo umount /mnt/usb/
+
+> Only boot files (Not working...):
+>
+>     sudo tar xzf ~/buster-armel.final.tar.gz -C /mnt/usb/ boot
+
 # Serial boot
 
     screen -L /dev/tty.usbserial-AG0JNME1 115200  
 
-At the Hit any key to stop autoboot prompt press space then 1
+At the `Hit any key to stop autoboot` prompt, press `space` then `1` (can be done before). You should see u-boot prompt:
 
-    Marvel>> printenv
+    Marvel>> 
+
+First, keep current u-boot parameters:
+
+    printenv
+
+> Keep the content of `printenv` output. This will be a useful reference if you want to restore any u-boot parameters.
+
+    setenv ethaddr 14:D6:4D:AB:A7:12
+    setenv bootargs console=ttyS0,115200 root=/dev/sda1 usb-storage.delay_use=0 rootdelay=1 rw
+    usb start ; ext2load usb 0:1 0xa00000 /boot/uImage ; ext2load usb 0:1 0xf00000 /boot/uInitrd
+    bootm 0xa00000 0xf00000
+
+> Debug USB disk:
+>
+>     usb start
+>     usb info
+>     usb part
+>     ext2ls usb 0:1
+>
+> To try another USB Key, restart:
+>
+>     reset
+> Source: https://github.com/ValCher1961/McDebian_WRT3200ACM/wiki/%23-Using-external-drives-in-U-Boot
+
+## Persist boot to USB
+
+    setenv ethaddr 14:D6:4D:AB:A7:12
+    setenv bootargs console=ttyS0,115200 root=/dev/sda1 usb-storage.delay_use=0 rootdelay=1 rw
+    setenv bootcmd 'usb start;ext2load usb 0:1 0xa00000 /boot/uImage;ext2load usb 0:1 0xf00000 /boot/uInitrd;bootm 0xa00000 0xf00000'
+    saveenv
+    reset
+
+> Note: L'argument mtdparts passé par u-boot au noyau a été renommé en cmdlinepart.mtdparts (détails dans le bug #831352).
 
 ------------------------------
 

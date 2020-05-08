@@ -1,0 +1,60 @@
+Marvell_DNS320>> usb start
+
+(Re)start USB...
+USB:   scanning bus for devices... 2 USB Device(s) found
+       scanning bus for storage devices... 1 Storage Device(s) found
+Marvell_DNS320>> usb info
+
+1: Hub,  USB Revision 2.0
+ - Marvell EHCI 
+ - Class: Hub
+ - PacketSize: 64  Configurations: 1
+ - Vendor: 0x0000  Product 0x0000 Version 1.0
+   Configuration: 1
+   - Interfaces: 1 Self Powered 0mA
+     Interface: 0
+     - Alternate Settings 0, Endpoints: 1
+     - Class Hub
+     - Endpoint 1 In Interrupt MaxPacket 8 Interval 255ms
+
+2: Mass Storage,  USB Revision 2.0
+ -          USB DISK 90B11900CFB902DC
+ - Class: (from Interface) Mass Storage
+ - PacketSize: 64  Configurations: 1
+ - Vendor: 0x1234  Product 0xffff Version 1.0
+   Configuration: 1
+   - Interfaces: 1 Bus Powered 200mA
+     Interface: 0
+     - Alternate Settings 0, Endpoints: 2
+     - Class Mass Storage, Transp. SCSI, Bulk only
+     - Endpoint 1 In Bulk MaxPacket 512
+     - Endpoint 2 Out Bulk MaxPacket 512
+
+Marvell_DNS320>> usb part
+
+print_part of 0
+
+Partition Map for USB device 0  --   Partition Type: DOS
+
+Partition     Start Sector     Num Sectors     Type
+    1		      2048	   3930112	83
+
+print_part of 1
+## Unknown partition table
+
+print_part of 2
+## Unknown partition table
+
+print_part of 3
+## Unknown partition table
+
+print_part of 4
+## Unknown partition table
+Marvell_DNS320>> ext2ls usb 0:1
+
+<DIR>       4096 .
+<DIR>       4096 ..
+<DIR>      16384 lost+found
+               0 test
+Marvell_DNS320>> 
+

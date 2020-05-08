@@ -1,0 +1,82 @@
+Marvell_DNS320>> help
+
+?       - alias for 'help'
+SatR - sample at reset sub-system, relevent for DB only
+base    - print or set address offset
+boot    - boot default, i.e., run 'bootcmd'
+bootd   - boot default, i.e., run 'bootcmd'
+bootext2    dev:boot_part1,boot_part2 addr boot_image linux_dev_name 
+bootm   - boot application image from memory
+bootp	- boot image via network using BootP/TFTP protocol
+bubt	- Burn an image on the Boot Nand Flash.
+chpart	- change active partition
+cmp     - memory compare
+cmpm	- Compare Memory
+cp      - memory copy
+cpumap - Display CPU memory mapping settings.
+crc32   - checksum calculation
+date    - get/set/reset date & time
+dclk	- Display the MV device CLKs.
+dhcp	- invoke DHCP client to obtain IP/boot params
+diskboot- boot from IDE device
+echo    - echo args to console
+eeprom  - EEPROM sub-system
+erase   - erase FLASH memory
+ext2load- load binary file from a Ext2 filesystem
+ext2ls  - list files in a directory (default /)
+fatinfo - print information about filesystem
+fatload - load binary file from a dos filesystem
+fatls   - list files in a directory (default /)
+fi	- Find value in the memory.
+flinfo  - print FLASH memory information
+fsinfo	- print information about filesystems
+fsload	- load binary file from a filesystem image
+g	- start application at cached address 'addr'(default addr 0x40000)
+go      - start application at address 'addr'
+help    - print online help
+icrc32  - checksum calculation
+ide     - IDE sub-system
+iloop   - infinite loop on address range
+imd     - i2c memory display
+imm[.b, .s, .w, .l]     - i2c memory modify (auto-incrementing)
+imw     - memory write (fill)
+inm     - memory modify (constant address)
+iprobe  - probe to discover valid I2C chip addresses
+ir	- reading and changing MV internal register values.
+loop    - infinite loop on address range
+ls	- list files in a directory (default /)
+map	- Diasplay address decode windows
+md      - memory display
+me	- PCI master enable
+mm      - memory modify (auto-incrementing)
+mp	- map PCI BAR
+mtdparts- define flash/nand partitions
+mtest   - simple RAM test
+mw      - memory write (fill)
+nand                   - NAND sub-system
+nboot   - boot from NAND device
+nbubt	- Burn a boot loader image on the Boot Nand Flash.
+nm      - memory modify (constant address)
+pci     - list and access PCI Configuration Space
+phyRead	- Read PCI-E Phy register
+pciePhyWrite	- Write PCI-E Phy register
+phyRead	- Read Phy register
+phyWrite	- Write Phy register
+ping	- send ICMP ECHO_REQUEST to network host
+printenv- print environment variables
+protect - enable or disable FLASH write protection
+rarpboot- boot image via network using RARP/TFTP protocol
+rcvr	- Satrt recovery process (Distress Beacon with TFTP server)
+reset   - Perform RESET of the CPU
+resetenv	- Return all environment variable to default.
+run     - run commands in an environment variable
+saveenv - save environment variables to persistent storage
+se	- PCI Slave enable
+setenv  - set environment variables
+sflash	- read, write or erase the external SPI Flash.
+sg	- scanning the PHYs status
+sp	- Scan PCI bus.
+tftpboot- boot image via network using TFTP protocol
+usb     - USB sub-system
+usbboot - boot from USB device
+version - print monitor version

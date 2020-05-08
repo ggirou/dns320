@@ -9,20 +9,24 @@ mkdir -p /chroot
 
 [ -f /dist/$suite-$arch.tar ] \
   && tar xf /dist/$suite-$arch.tar -C /chroot \
-  || debootstrap --arch=$arch --include=$include $suite /chroot $mirror
+  || (debootstrap --arch=$arch --include=$include $suite /chroot $mirror \
+      && tar cf /dist/$suite-$arch.tar -C /chroot/ .)
 
 ls -la /chroot
 
-tar cf /dist/$suite-$arch.tar -C /chroot/ .
+echo DNS-320 > /chroot/etc/hostname
+echo LANG=en_US.UTF-8 > /chroot/etc/default/locale
+echo en_US.UTF-8 UTF-8 >> /chroot/etc/locale.gen
+echo "Europe/Paris" > /chroot/etc/timezone
 
-cat <<EOF > /chroot/etc/fstab
+cat <<'EOF' > /chroot/etc/fstab
 /dev/root   /       auto    noatime                 0 0
 tmpfs       /tmp    tmpfs   nodev,nosuid,size=32M   0 0
 EOF
 
 # Build u-boot images whenever a new kernel is installed
-cat <<EOF > /chroot/etc/kernel/postinst.d/zz-local-build-image
-#!/bin/sh -e
+cat <<'EOF' > /chroot/etc/kernel/postinst.d/zz-local-build-image
+#!/bin/sh -ex
 # passing the kernel version is required
 version="$1"
 [ -z "${version}" ] && exit 0
@@ -67,22 +71,31 @@ gpio_keys
 # usb_storage
 EOF
 
-chroot /chroot bash <<EOF
+chroot /chroot bash -ex <<'EOF'
 echo 'root:dlink' | chpasswd
-echo DNS-320 > /etc/hostname
 
-echo en_US.UTF-8 UTF-8 >> /etc/locale.gen
-dpkg-reconfigure locales
+dpkg-reconfigure --frontend=noninteractive locales
+update-locale LANG=en_US.UTF-8
+
+dpkg-reconfigure --frontend=noninteractive tzdata
 
 # Build u-boot images for already installed kernel
 dpkg-reconfigure $(dpkg --get-selections | egrep 'linux-image-[0-9]' | cut -f1)
 
 apt-get clean
-rm /tmp/* /var/tmp/* /var/lib/apt/lists/* /var/cache/debconf/* /var/log/*.log
+rm /tmp/* /var/tmp/* /var/lib/apt/lists/* /var/cache/debconf/* /var/log/*.log || true
 EOF
-#chroot /chroot sh -c "apt-key list | grep expired | cut -d'/' -f2 | cut -d' ' -f1 | xargs -l apt-key adv --recv-keys --keyserver keys.gnupg.net"
 
 tar czf /dist/$suite-$arch.final.tar.gz -C /chroot/ .
 
+# Debugging
+ls -lah /chroot/boot
 
-# L'argument mtdparts passé par u-boot au noyau a été renommé en cmdlinepart.mtdparts (détails dans le bug #831352).
+cat /chroot/etc/hostname
+cat /chroot/etc/default/locale
+cat /chroot/etc/locale.gen | egrep '^[^#]'
+cat /chroot/etc/timezone
+
+cat /chroot/etc/fstab
+cat /chroot/chroot/etc/kernel/postinst.d/zz-local-build-image
+cat /chroot/etc/initramfs-tools/modules
