@@ -1,0 +1,336 @@
+ ** MARVELL BOARD: DB-88F6281A-BP LE 
+
+U-Boot 1.1.4 (Jan 21 2011 - 11:56:48) Marvell version: 3.4.14.DNS-320_03
+
+U-Boot code: 00600000 -> 0067FFF0  BSS: -> 006CEE80
+
+Soc: MV88F6281 Rev 3 (DDR2)
+CPU running @ 800Mhz L2 running @ 400Mhz
+SysClock = 200Mhz , TClock = 166Mhz 
+
+DRAM CAS Latency = 3 tRP = 3 tRAS = 8 tRCD=3
+DRAM CS[0] base 0x00000000   size 128MB 
+DRAM Total size 128MB  16bit width
+Flash:  0 kB
+Addresses 8M - 0M are saved for the U-Boot usage.
+Mem malloc Initialization (8M - 7M): Done
+NAND:128 MB
+*** Warning - bad CRC or NAND, using default environment
+
+
+CPU : Marvell Feroceon (Rev 1)
+
+Streaming disabled 
+Write allocate disabled
+
+
+USB 0: host mode
+PEX 0: interface detected no Link.
+Net:   egiga0 [PRIME]
+Hit any key to stop autoboot:  1  0 
+
+NAND read: device 0 offset 0x100000, size 0x300000
+load addr ....  =a00000
+
+ 3145728 bytes read: OK
+
+NAND read: device 0 offset 0x600000, size 0x300000
+load addr ....  =f00000
+
+ 3145728 bytes read: OK
+## Booting image at 00a00000 ...
+   Image Name:   Linux-2.6.22.18
+   Created:      2011-05-25   7:48:34 UTC
+   Image Type:   ARM Linux Kernel Image (uncompressed)
+   Data Size:    2211624 Bytes =  2.1 MB
+   Load Address: 00008000
+   Entry Point:  00008000
+   Verifying Checksum ... OK
+OK
+## Loading Ramdisk Image at 00f00000 ...
+   Image Name:   Ramdisk
+   Created:      2012-06-18   6:41:59 UTC
+   Image Type:   ARM Linux RAMDisk Image (gzip compressed)
+   Data Size:    1736469 Bytes =  1.7 MB
+   Load Address: 00e00000
+   Entry Point:  00e00000
+   Verifying Checksum ... OK
+
+Starting kernel ...
+
+Uncompressing Linux............................................................................................................................................. done, booting the kernel.
+
+Linux version 2.6.22.18 (jack@swtest4) (gcc version 4.2.1) #23 Wed May 25 15:48:30 CST 2011
+CPU: ARM926EJ-S [56251311] revision 1 (ARMv5TE), cr=00053977
+Machine: Feroceon-KW
+Using UBoot passing parameters structure
+Memory policy: ECC disabled, Data cache writeback
+CPU0: D VIVT write-back cache
+CPU0: I cache: 16384 bytes, associativity 4, 32 byte lines, 128 sets
+CPU0: D cache: 16384 bytes, associativity 4, 32 byte lines, 128 sets
+Built 1 zonelists.  Total pages: 32512
+Kernel command line: root=/dev/ram console=ttyS0,115200 :::DB88FXX81:egiga0:none
+PID hash table entries: 512 (order: 9, 2048 bytes)
+Console: colour dummy device 80x30
+Dentry cache hash table entries: 16384 (order: 4, 65536 bytes)
+Inode-cache hash table entries: 8192 (order: 3, 32768 bytes)
+Memory: 128MB 0MB 0MB 0MB = 128MB total
+Memory: 123520KB available (4148K code, 252K data, 124K init)
+Mount-cache hash table entries: 512
+CPU: Testing write buffer coherency: ok
+NET: Registered protocol family 16
+
+CPU Interface
+-------------
+SDRAM_CS0 ....base 00000000, size 128MB 
+SDRAM_CS1 ....disable
+SDRAM_CS2 ....disable
+SDRAM_CS3 ....disable
+PEX0_MEM ....base e8000000, size 128MB 
+PEX0_IO ....base f2000000, size   1MB 
+INTER_REGS ....base f1000000, size   1MB 
+NFLASH_CS ....base fa000000, size   2MB 
+SPI_CS ....base f4000000, size  16MB 
+BOOT_ROM_CS ....no such
+DEV_BOOTCS ....no such
+CRYPT_ENG ....base f0000000, size   2MB 
+
+  Marvell Development Board (LSP Version KW_LSP_4.3.4_patch30)-- DB-88F6281A-BP  Soc: 88F6281 A1 LE
+
+ Detected Tclk 166666667 and SysClk 200000000 
+MV Buttons Device Load
+Marvell USB EHCI Host controller #0: c05ac600
+PEX0 interface detected no Link.
+PCI: bus0: Fast back to back transfers enabled
+SCSI subsystem initialized
+usbcore: registered new interface driver usbfs
+usbcore: registered new interface driver hub
+usbcore: registered new device driver usb
+Time: kw_clocksource clocksource has been installed.
+NET: Registered protocol family 2
+IP route cache hash table entries: 1024 (order: 0, 4096 bytes)
+TCP established hash table entries: 4096 (order: 3, 32768 bytes)
+TCP bind hash table entries: 4096 (order: 2, 16384 bytes)
+TCP: Hash tables configured (established 4096 bind 4096)
+TCP reno registered
+checking if image is initramfs...it isn't (no cpio magic); looks like an initrd
+Freeing initrd memory: 1695K
+cpufreq: Init kirkwood cpufreq driver
+XOR registered 1 NET_DMA over 4 channels
+XOR 2nd invalidate WA enabled
+cesadev_init(c00119d8)
+mvCesaInit: sessions=640, queue=64, pSram=f0000000
+Warning: TS unit is powered off.
+MV Buttons Driver Load
+VFS: Disk quotas dquot_6.5.1
+Dquot-cache hash table entries: 1024 (order 0, 4096 bytes)
+squashfs: version 3.3 (2007/10/31) Phillip Lougher
+squashfs: LZMA suppport for slax.org by jro
+Installing knfsd (copyright (C) 1996 okir@monad.swb.de).
+JFFS2 version 2.2. (NAND) Â© 2001-2006 Red Hat, Inc.
+fuse init (API version 7.8)
+SGI XFS with large block numbers, no debug enabled
+io scheduler noop registered
+io scheduler anticipatory registered (default)
+Serial: 8250/16550 driver $Revision: 1.7 $ 4 ports, IRQ sharing disabled
+serial8250.0: ttyS0 at MMIO 0xf1012000 (irq = 33) is a 16550A
+serial8250.0: ttyS1 at MMIO 0xf1012100 (irq = 34) is a 16550A
+RAMDISK driver initialized: 16 RAM disks of 10240K size 1024 blocksize
+loop: module loaded
+Loading Marvell Ethernet Driver:
+  o Cached descriptors in DRAM
+  o DRAM SW cache-coherency
+  o Single RX Queue support - ETH_DEF_RXQ=0
+  o Single TX Queue support - ETH_DEF_TXQ=0
+  o TCP segmentation offload enabled
+  o LRO support supported
+  o Receive checksum offload enabled
+  o Transmit checksum offload enabled
+  o Network Fast Processing (Routing) supported
+  o Driver ERROR statistics enabled
+  o Driver INFO statistics enabled
+  o Proc tool API enabled
+  o SKB Reuse supported
+  o SKB Recycle supported
+  o Rx descripors: q0=128
+  o Tx descripors: q0=532
+  o Loading network interface(s):
+    o  register under egiga0 platform
+    o egiga0, ifindex = 1, GbE port = 0
+
+Warning: Giga 1 is Powered Off
+
+mvFpRuleDb (c07d4000): 1024 entries, 4096 bytes
+Integrated Sata device found
+scsi0 : Marvell SCSI to SATA adapter
+scsi1 : Marvell SCSI to SATA adapter
+NFTL driver: nftlcore.c $Revision: 1.1.1.1 $, nftlmount.c $Revision: 1.1.1.1 $
+NAND device: Manufacturer ID: 0xec, Chip ID: 0xf1 (Samsung NAND 128MiB 3,3V 8-bit)
+Scanning device for bad blocks
+Using static partition definition
+Creating 6 MTD partitions on "nand_mtd":
+0x00000000-0x00100000 : "u-boot"
+0x00100000-0x00600000 : "uImage"
+0x00600000-0x00b00000 : "ramdisk"
+0x00b00000-0x07100000 : "image"
+0x07100000-0x07b00000 : "mini firmware"
+0x07b00000-0x08000000 : "config"
+ehci_marvell ehci_marvell.70059: Marvell Orion EHCI
+ehci_marvell ehci_marvell.70059: new USB bus registered, assigned bus number 1
+ehci_marvell ehci_marvell.70059: irq 19, io base 0xf1050100
+ehci_marvell ehci_marvell.70059: USB 2.0 started, EHCI 1.00, driver 10 Dec 2004
+usb usb1: configuration #1 chosen from 1 choice
+hub 1-0:1.0: USB hub found
+hub 1-0:1.0: 1 port detected
+USB Universal Host Controller Interface driver v3.0
+mice: PS/2 mouse device common for all mice
+i2c /dev entries driver
+md: linear personality registered for level -1
+md: raid0 personality registered for level 0
+md: raid1 personality registered for level 1
+device-mapper: ioctl: 4.11.0-ioctl (2006-10-12) initialised: dm-devel@redhat.com
+dm_crypt using the OCF package.
+usbcore: registered new interface driver usbhid
+drivers/hid/usbhid/hid-core.c: v2.6:USB HID core driver
+TCP cubic registered
+NET: Registered protocol family 1
+NET: Registered protocol family 17
+md: Autodetecting RAID arrays.
+md: autorun ...
+md: ... autorun DONE.
+RAMDISK: Compressed image found at block 0
+EXT2-fs warning: maximal mount count reached, running e2fsck is recommended
+VFS: Mounted root (ext2 filesystem).
+Freeing init memory: 124K
+
+init started: BusyBox v1.11.2 (2012-06-14 12:02:06 CST)
+
+starting pid 276, tty '': '/etc/rc.sh'
+** Mounting /etc/fstab
+umount: proc: not mounted
+umount: proc: not mounted
+umount: /usr/local/modules: not mounted
+umount: /usr/local/tmp/image.cfs: not found
+umount: /usr/local/tmp: not mounted
+first good block is 0
+ECC failed: 0
+ECC corrected: 0
+Number of bad blocks: 0
+Number of bbt blocks: 0
+Block size 131072, page size 2048, OOB size 64
+Dumping data starting at 0x00000000 and ending at 0x00000800...
+image len = 28012544 , image checksum = 565151d9
+ECC failed: 0
+ECC corrected: 0
+Number of bad blocks: 0
+Number of bbt blocks: 0
+Block size 131072, page size 2048, OOB size 64
+Dumping data starting at 0x00000800 and ending at 0x02400000...
+dump image checksum=565151d9
+ln: /usr/sbin/system_init: File exists
+ln: /lib/libntfs-3g.so.75.0.0: File exists
+mtd check V1.00.20110518
+/usr/local/config free size is 4796416
+** copy config files
+usbcore: registered new interface driver usblp
+drivers/usb/class/usblp.c: v0.13: USB Printer Device Class driver
+** set loopback interface
+first good block is 0
+ECC failed: 0
+ECC corrected: 0
+Number of bad blocks: 0
+Number of bbt blocks: 0
+Block size 131072, page size 2048, OOB sizegiga0: mac address changed
+e 64
+Dumping data starting at 0x00000000 and ending at 0x00000800...
+mac = 14:D6:4D:AB:A7:12
+egiga0: started
+cp -f /usr/local/modules/sbin/zoneinfo/28Madrid /etc/localtime
+hostname=[GGirou-Store]
+rtc: RTC time = 2020/5/6 Wed 20:33:49
+rtc: RTC time = 2020/5/6 Wed 20:33:49
+** execute rc.init.sh
+192.168.1.1
+requested_ip=192.168.1.1
+udhcpc (v1.11.2) started
+Sending discover...
+Sending discover...
+Sending discover...
+No lease, forking to background
+
+Module IPC SERVER Version:(1.00.20090706)
+
+hd verify v1.02.20110719
+can not detect hd
+chk_io V1.00.10272010
+support usb storage unmount
+** Get MAC Addr
+system daemon v1.02.20110621
+op_server v2.01.06012006
+Start Lighttpd Daemon
+created mail daemon thread 0
+sh: you need to specify whom to kill
+
+mfg_svr version 1.01(2011-08-05)
+
+mfg_svr
+ERROR: Module lltd does not exist in /proc/modules
+
+starting pid 1306, tty '/dev/ttyS0': '/bin/login'
+Password of admin: 2020-05-06 20:34:08: (../../src/log.c.166) server started 
+local ip c0a8002Initializing USB Mass Storage driver...
+0 (192.168.0.32)
+netmask  ffffff00 (255.255.255.0)
+mfg_svr: init socket OK
+usbcore: registered new interface driver usb-storage
+USB Mass Storage support registered.
+disk mode is 		standard
+mount normal
+Setting up swapspace version 1, size = 18446744073709547520 byteUnable to find swap-space signature
+s
+mkswap: lseek(1024): Invalid argument
+swapon: /dev/md0: Invalid argument
+LED_POWER_ON
+sata_hotplug v1.00.20100112
+NTFS driver 2.1.28 [Flags: R/O MODULE].
+usbcore: deregistering interface driver usb-storage
+No found HD
+alarm_handler: mfg_svr exit (timeout) Wed May  6 20:35:38 2020
+Push Power off key
+Push Power off key
+Push Power off key
+killall: quotacheck: no process killed
+2020-05-06 20:35:52: (../../src/server.c.1503) server stopped by UID = 0 PID = 3556 
+../../src/lighttpd-angel.c.140: child (pid=1284) exited normally with exitcode: 0
+Power off
+kill process
+Killed
+killall: scheddler: no process killed
+killall: mysqld_safe: no process killed
+killall: mysqld: no process killed
+usbcore: deregistering interface driver usblp
+ERROR: Removing 'lltd': No such file or directory
+Stop NFS Deamon....
+Stop NFS mountd....
+Unload Driver....
+Stop Portmap.
+rm: cannot remove '/var/lib/nfs/xtab': No such file or directory
+rm: cannot remove '/var/lib/nfs/etab': No such file or directory
+rm: cannot remove '/var/lib/nfs/rmtab': No such file or directory
+rm: cannot remove '/var/lib/nfs/state': No such file or directory
+Stop NFS Server OVER.
+$Shutting down SMB services: sh: you need to specify whom to kill
+
+$Shutting down NMB services: sh: you need to specify whom to kill
+
+killall: rsync: no process killed
+killall: sshd: no process killed
+Shutting down AFP services:
+swapoff: /dev/md0: Invalid argument
+md: md0 stopped.
+mdadm: stopped /dev/md0
+md: md1 stopped.
+mdadm: stopped /dev/md1
+md: md2 stopped.
+mdadm: stopped /dev/md2
+Sent Power Off Command...Start
