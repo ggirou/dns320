@@ -1,1 +1,4 @@
 dist/
+tmp/
+screenlog.0*
+private.txt

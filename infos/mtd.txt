@@ -1,0 +1,18 @@
+root@ggirou-store:~# cat /proc/mtd
+dev:    size   erasesize  name
+mtd0: 00100000 00020000 "u-boot"
+mtd1: 00500000 00020000 "uImage"
+mtd2: 00500000 00020000 "ramdisk"
+mtd3: 06600000 00020000 "image"
+mtd4: 00a00000 00020000 "mini firmware"
+mtd5: 00500000 00020000 "config"
+
+
+[   17.617347] 6 fixed-partitions partitions found on MTD device orion_nand
+[   17.624113] Creating 6 MTD partitions on "orion_nand":
+[   17.640493] 0x000000000000-0x000000100000 : "u-boot"
+[   17.654534] 0x000000100000-0x000000600000 : "uImage"
+[   17.670468] 0x000000600000-0x000000b00000 : "ramdisk"
+[   17.682470] 0x000000b00000-0x000007100000 : "image"
+[   17.698547] 0x000007100000-0x000007b00000 : "mini firmware"
+[   17.710590] 0x000007b00000-0x000008000000 : "config"

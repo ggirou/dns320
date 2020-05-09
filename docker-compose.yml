@@ -5,10 +5,8 @@ services:
     volumes:
       - "./scripts:/scripts"
       - "./dist:/dist"
-    # command: ["./deboot.sh", "armel", "squeeze", "http://archive.debian.org/debian/", "openssh-server,locales,tzdata,ntpdate,console-data,gnupg,apt-transport-https,ca-certificates,curl,nano"]
+    # command: ["./deboot.sh", "armel", "squeeze", "http://archive.debian.org/debian/"]
     # command: ["./deboot.sh", "armel", "wheezy", "http://archive.debian.org/debian/"]
     # command: ["./deboot.sh", "armel", "jessie", "http://ftp.debian.org/debian/"]
     # command: ["./deboot.sh", "armel", "stretch", "http://ftp.debian.org/debian/"]
-    # command: ["./deboot.sh", "armel", "buster", "http://ftp.fr.debian.org/debian/", "openssh-server"]
-    command: ["./deboot.sh", "armel", "buster", "http://ftp.fr.debian.org/debian/", 
-      "linux-image-marvell,openssh-server,locales,tzdata,ntpdate,console-data,gnupg,apt-transport-https,ca-certificates,curl,nano,udev,dialog,ifupdown,mtd-utils,procps,iputils-ping,isc-dhcp-client,wget,netbase,acl,openssh-server,avahi-daemon,python-minimal,u-boot-tools"]
+    command: ["./deboot.sh", "armel", "buster", "http://ftp.fr.debian.org/debian/"]

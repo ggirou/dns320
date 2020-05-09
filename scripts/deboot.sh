@@ -3,7 +3,9 @@
 arch=$1
 suite=$2
 mirror=$3
-include=$4
+
+include="linux-image-marvell,openssh-server,sudo,locales,tzdata,ntpdate,console-data,gnupg,apt-transport-https,ca-certificates,curl,nano,udev,dialog,ifupdown,mtd-utils,procps,iputils-ping,isc-dhcp-client,wget,netbase,net-tools,acl,openssh-server,avahi-daemon,python-minimal,u-boot-tools,hdparm,samba"
+hostname=DNS-320
 
 mkdir -p /chroot
 
@@ -14,14 +16,35 @@ mkdir -p /chroot
 
 ls -la /chroot
 
-echo DNS-320 > /chroot/etc/hostname
+echo $hostname > /chroot/etc/hostname
+echo "127.0.1.1       $hostname" >> /chroot/etc/hosts
 echo LANG=en_US.UTF-8 > /chroot/etc/default/locale
 echo en_US.UTF-8 UTF-8 >> /chroot/etc/locale.gen
 echo "Europe/Paris" > /chroot/etc/timezone
 
+cat <<EOF > /chroot/etc/network/interfaces.d/eth0
+auto eth0
+iface eth0 inet dhcp
+EOF
+
 cat <<'EOF' > /chroot/etc/fstab
 /dev/root   /       auto    noatime                 0 0
 tmpfs       /tmp    tmpfs   nodev,nosuid,size=32M   0 0
+/dev/disk/by-path/platform-f1080000.sata-ata-1-part2   /mnt/HD/HD_a2/  ext3    rw,relatime     0 0
+/dev/disk/by-path/platform-f1080000.sata-ata-2-part2   /mnt/HD/HD_b2/  ext3    rw,relatime     0 0
+EOF
+
+# HDD Hibernate
+cat <<'EOF' >> /chroot/etc/hdparm.conf
+/dev/disk/by-path/platform-f1080000.sata-ata-1 {
+    # Hibernate after 5min (5s * 60)
+    spindown_time = 60
+}
+
+/dev/disk/by-path/platform-f1080000.sata-ata-2 {
+    # Hibernate after 5min (5s * 60)
+    spindown_time = 60
+}
 EOF
 
 # Build u-boot images whenever a new kernel is installed
@@ -52,12 +75,15 @@ chmod a+x /chroot/etc/kernel/postinst.d/zz-local-build-image
 # All these modules will be stored in the initramfs and always loaded
 # You may want some filesystems too, e.g. ext4
 cat <<'EOF' >> /chroot/etc/initramfs-tools/modules
+# If modified, run update-initramfs -u
 # Thermal management
 gpio-fan
 kirkwood_thermal
 # SATA
 ehci_orion
 sata_mv
+# Nand
+orion_nand
 # Ethernet
 mv643xx_eth
 marvell
@@ -67,12 +93,13 @@ ipv6
 evdev
 gpio_keys
 # USB disks
-# sd_mod
-# usb_storage
+sd_mod
+usb_storage
 EOF
 
 chroot /chroot bash -ex <<'EOF'
-echo 'root:dlink' | chpasswd
+useradd -m -s /bin/bash -G sudo dlink
+echo 'dlink:dns320' | chpasswd
 
 dpkg-reconfigure --frontend=noninteractive locales
 update-locale LANG=en_US.UTF-8
@@ -82,8 +109,15 @@ dpkg-reconfigure --frontend=noninteractive tzdata
 # Build u-boot images for already installed kernel
 dpkg-reconfigure $(dpkg --get-selections | egrep 'linux-image-[0-9]' | cut -f1)
 
+# mkdir -p /mnt/HD/HD_a2 /mnt/HD/HD_b2 /mnt/HD_a4 /mnt/HD_b4
+# chmod -R a+rw /mnt/HD/HD_a2 /mnt/HD/HD_b2 /mnt/HD_a4 /mnt/HD_b4
+
+wget https://github.com/lentinj/dns-nas-utils/raw/master/dns-nas-utils.deb
+dpkg -i dns-nas-utils.deb
+rm dns-nas-utils.deb
+
 apt-get clean
-rm /tmp/* /var/tmp/* /var/lib/apt/lists/* /var/cache/debconf/* /var/log/*.log || true
+rm /tmp/* /var/tmp/* /var/lib/apt/lists/*   /var/cache/debconf/* /var/log/*.log || true
 EOF
 
 tar czf /dist/$suite-$arch.final.tar.gz -C /chroot/ .

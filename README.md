@@ -69,7 +69,9 @@ First, keep current u-boot parameters:
 > Keep the content of `printenv` output. This will be a useful reference if you want to restore any u-boot parameters.
 
     setenv ethaddr 14:D6:4D:AB:A7:12
-    setenv bootargs console=ttyS0,115200 root=/dev/sda1 usb-storage.delay_use=0 rootdelay=1 rw
+    setenv bootargs_root root=/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part1 rw
+    setenv mtdparts cmdlinepart.mtdparts=nand_mtd:0xc0000@0(uboot)ro,0x7f00000@0x100000(root)
+    setenv bootargs console=ttyS0,115200 $(bootargs_root) initramfs.runsize=32M $(mtdparts) usb-storage.delay_use=0 rootdelay=1
     usb start ; ext2load usb 0:1 0xa00000 /boot/uImage ; ext2load usb 0:1 0xf00000 /boot/uInitrd
     bootm 0xa00000 0xf00000
 
@@ -85,15 +87,31 @@ First, keep current u-boot parameters:
 >     reset
 > Source: https://github.com/ValCher1961/McDebian_WRT3200ACM/wiki/%23-Using-external-drives-in-U-Boot
 
+> USB boot root works with `bootargs_root root=/dev/sda1 rw` if no disks.  
+> Works with `bootargs_root root=/dev/sdb1 rw` if two disks.  
+> Use full path to be sure.
+
 ## Persist boot to USB
 
     setenv ethaddr 14:D6:4D:AB:A7:12
-    setenv bootargs console=ttyS0,115200 root=/dev/sda1 usb-storage.delay_use=0 rootdelay=1 rw
+    setenv bootargs_root root=/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part1 rw
+    setenv mtdparts cmdlinepart.mtdparts=nand_mtd:0xc0000@0(uboot)ro,0x7f00000@0x100000(root)
+    setenv bootargs console=ttyS0,115200 $(bootargs_root) initramfs.runsize=32M $(mtdparts) usb-storage.delay_use=0 rootdelay=1
     setenv bootcmd 'usb start;ext2load usb 0:1 0xa00000 /boot/uImage;ext2load usb 0:1 0xf00000 /boot/uInitrd;bootm 0xa00000 0xf00000'
     saveenv
     reset
 
-> Note: L'argument mtdparts passé par u-boot au noyau a été renommé en cmdlinepart.mtdparts (détails dans le bug #831352).
+> Check
+>
+>     printenv bootargs mtdparts ethaddr bootcmd
+
+> Note:  
+> `initramfs.runsize` 10% by default, fit it to 32M  
+> L'argument mtdparts passé par u-boot au noyau a été renommé en cmdlinepart.mtdparts (détails dans le bug #831352).
+
+## Rollback
+
+    resetenv
 
 ------------------------------
 
