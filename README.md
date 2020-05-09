@@ -69,49 +69,48 @@ First, keep current u-boot parameters:
 > Keep the content of `printenv` output. This will be a useful reference if you want to restore any u-boot parameters.
 
     setenv ethaddr 14:D6:4D:AB:A7:12
-    setenv bootargs_root root=/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part1 rw
-    setenv mtdparts cmdlinepart.mtdparts=nand_mtd:0xc0000@0(uboot)ro,0x7f00000@0x100000(root)
-    setenv bootargs console=ttyS0,115200 $(bootargs_root) initramfs.runsize=32M $(mtdparts) usb-storage.delay_use=0 rootdelay=1
-    usb start ; ext2load usb 0:1 0xa00000 /boot/uImage ; ext2load usb 0:1 0xf00000 /boot/uInitrd
-    bootm 0xa00000 0xf00000
-
-> Debug USB disk:
->
->     usb start
->     usb info
->     usb part
->     ext2ls usb 0:1
->
-> To try another USB Key, restart:
->
->     reset
-> Source: https://github.com/ValCher1961/McDebian_WRT3200ACM/wiki/%23-Using-external-drives-in-U-Boot
-
-> USB boot root works with `bootargs_root root=/dev/sda1 rw` if no disks.  
-> Works with `bootargs_root root=/dev/sdb1 rw` if two disks.  
-> Use full path to be sure.
-
-## Persist boot to USB
-
-    setenv ethaddr 14:D6:4D:AB:A7:12
-    setenv bootargs_root root=/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part1 rw
-    setenv mtdparts cmdlinepart.mtdparts=nand_mtd:0xc0000@0(uboot)ro,0x7f00000@0x100000(root)
-    setenv bootargs console=ttyS0,115200 $(bootargs_root) initramfs.runsize=32M $(mtdparts) usb-storage.delay_use=0 rootdelay=1
+    setenv usbbootargs_root root=/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part1 rw
+    setenv mtdparts mtdparts=orion_nand:1M(u-boot),5M(uImage),5M(ramdisk),102M(image),10M(mini_firmware),-(config)
+    setenv cmdlinepart.mtdparts cmdlinepart.mtdparts=orion_nand:1M(u-boot),5M(uImage),5M(ramdisk),102M(image),10M(mini_firmware),-(config)
+    setenv bootargs console=ttyS0,115200 initramfs.runsize=32M usb-storage.delay_use=0 rootdelay=1 panic=5 $(usbbootargs_root) $(mtdparts) $(cmdlinepart.mtdparts)
     setenv bootcmd 'usb start;ext2load usb 0:1 0xa00000 /boot/uImage;ext2load usb 0:1 0xf00000 /boot/uInitrd;bootm 0xa00000 0xf00000'
+    boot
+
+If booting is ok, re-run all `setenv` commands above, re-check values, then persist:
+
+    printenv ethaddr usbbootargs_root mtdparts cmdlinepart.mtdparts bootargs bootcmd
     saveenv
     reset
 
-> Check
->
->     printenv bootargs mtdparts ethaddr bootcmd
-
 > Note:  
+>
+> USB boot root works with `usbbootargs_root root=/dev/sda1 rw` if no disks.  
+> Works with `usbbootargs_root root=/dev/sdb1 rw` if two disks.  
+> Use full path to be sure.
+>
 > `initramfs.runsize` 10% by default, fit it to 32M  
 > L'argument mtdparts passé par u-boot au noyau a été renommé en cmdlinepart.mtdparts (détails dans le bug #831352).
+>
+> `ping 192.168.1.1` adds a delay waiting for usb device to be ready
+> `panic=Y` reboot on kernel panic. Happen when usb storage is not detected and default kernel is booted.
+
+### Debug USB disk
+
+    usb start
+    usb info
+    usb part
+    ext2ls usb 0:1
+
+To try another USB Key, restart:
+
+    reset
+
+Source: https://github.com/ValCher1961/McDebian_WRT3200ACM/wiki/%23-Using-external-drives-in-U-Boot
 
 ## Rollback
 
-    resetenv
+    setenv bootargs 'root=/dev/ram console=ttyS0,115200 :::DB88FXX81:egiga0:none'
+    setenv bootcmd 'nand read.e 0xa00000 0x100000 0x300000;nand read.e 0xf00000 0x600000 0x300000;bootm 0xa00000 0xf00000'
 
 ------------------------------
 

@@ -55,6 +55,18 @@ RUNLEVEL=:::DB88FXX81:egiga0:none
 SHELL=/bin/sh
 PWD=/
 
+# lsmod
+Module                  Size  Used by
+msdos                   7808  0 
+ntfs                   99012  0 
+scsi_wait_scan          1088  0 
+vfat                   10624  0 
+fat                    47932  2 msdos,vfat
+usb_storage            35044  1 
+usblp                  12096  0 
+sd_mod                 22512  10 
+reg                     1828  0 
+
 $ ls /sbin /usr/sbin /bin /usr/bin
 /bin:
 drwxr-xr-x    2 root     root         2.0k Jun 14  2012 .

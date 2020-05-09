@@ -1,0 +1,6 @@
+FROM debian
+
+RUN apt-get update \
+    && apt-get install -y make gcc gcc-arm-linux-gnueabi u-boot-tools git bison flex
+
+WORKDIR /uboot

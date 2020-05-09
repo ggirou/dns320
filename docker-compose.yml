@@ -10,3 +10,9 @@ services:
     # command: ["./deboot.sh", "armel", "jessie", "http://ftp.debian.org/debian/"]
     # command: ["./deboot.sh", "armel", "stretch", "http://ftp.debian.org/debian/"]
     command: ["./deboot.sh", "armel", "buster", "http://ftp.fr.debian.org/debian/"]
+  uboot:
+    build:
+      context: .
+      dockerfile: Dockerfile-uboot
+    volumes:
+      - "./u-boot:/uboot"

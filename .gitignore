@@ -1,4 +1,6 @@
+dns-nas-utils/
 dist/
 tmp/
+u-boot/
 screenlog.0*
 private.txt

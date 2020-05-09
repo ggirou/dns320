@@ -47,6 +47,17 @@ cat <<'EOF' >> /chroot/etc/hdparm.conf
 }
 EOF
 
+# TODO https://www.troublenow.org/752/debian-10-add-rc-local/
+# Power-recovery
+cat <<EOF > /chroot/etc/rc.local
+#!/bin/sh -e
+
+echo 37 > /sys/class/gpio/export
+echo out > /sys/class/gpio/gpio37/direction
+echo 1 > /sys/class/gpio/gpio37/value
+EOF
+chmod +x /chroot/etc/rc.local
+
 # Build u-boot images whenever a new kernel is installed
 cat <<'EOF' > /chroot/etc/kernel/postinst.d/zz-local-build-image
 #!/bin/sh -ex
@@ -75,7 +86,8 @@ chmod a+x /chroot/etc/kernel/postinst.d/zz-local-build-image
 # All these modules will be stored in the initramfs and always loaded
 # You may want some filesystems too, e.g. ext4
 cat <<'EOF' >> /chroot/etc/initramfs-tools/modules
-# If modified, run update-initramfs -u
+# If modified, run the following command:
+# dpkg-reconfigure $(dpkg --get-selections | egrep 'linux-image-[0-9]' | cut -f1)
 # Thermal management
 gpio-fan
 kirkwood_thermal
@@ -112,7 +124,7 @@ dpkg-reconfigure $(dpkg --get-selections | egrep 'linux-image-[0-9]' | cut -f1)
 # mkdir -p /mnt/HD/HD_a2 /mnt/HD/HD_b2 /mnt/HD_a4 /mnt/HD_b4
 # chmod -R a+rw /mnt/HD/HD_a2 /mnt/HD/HD_b2 /mnt/HD_a4 /mnt/HD_b4
 
-wget https://github.com/lentinj/dns-nas-utils/raw/master/dns-nas-utils.deb
+wget https://github.com/ggirou/dns-nas-utils/releases/download/v1.5-1/dns-nas-utils.deb
 dpkg -i dns-nas-utils.deb
 rm dns-nas-utils.deb
 
