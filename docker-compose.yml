@@ -14,5 +14,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-uboot
+    command: ["/scripts/build_uboot.sh"]
     volumes:
+      - "./scripts:/scripts"
+      - "./dist/uboot:/dist"
       - "./u-boot:/uboot"

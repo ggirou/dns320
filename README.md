@@ -6,9 +6,6 @@ Run debian on DNS320
 - Wikis: http://dns323.kood.org/dns-320
 - Linux kernel support: https://www.kernel.org/doc/html/latest/arm/marvel.html
 
-With Serial boot
-----------------
-
 # Deboostrap debian
 
     docker-compose run deboot
@@ -17,7 +14,6 @@ With Serial boot
 
     docker-compose run deboot bash
     ./deboot.sh armel buster http://ftp.fr.debian.org/debian/ openssh-server
-
 
 # Prepare USB key
 
@@ -56,7 +52,7 @@ With Serial boot
 
 # Serial boot
 
-    screen -L /dev/tty.usbserial-AG0JNME1 115200  
+    screen -L /dev/ttyUSB0 115200
 
 At the `Hit any key to stop autoboot` prompt, press `space` then `1` (can be done before). You should see u-boot prompt:
 
@@ -71,8 +67,8 @@ First, keep current u-boot parameters:
     setenv ethaddr 14:D6:4D:AB:A7:12
     setenv usbbootargs_root root=/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part1 rw
     setenv mtdparts mtdparts=orion_nand:1M(u-boot),5M(uImage),5M(ramdisk),102M(image),10M(mini_firmware),-(config)
-    setenv cmdlinepart.mtdparts cmdlinepart.mtdparts=orion_nand:1M(u-boot),5M(uImage),5M(ramdisk),102M(image),10M(mini_firmware),-(config)
-    setenv bootargs console=ttyS0,115200 initramfs.runsize=32M usb-storage.delay_use=0 rootdelay=1 panic=5 $(usbbootargs_root) $(mtdparts) $(cmdlinepart.mtdparts)
+    setenv bootargs console=ttyS0,115200 initramfs.runsize=32M usb-storage.delay_use=0 rootdelay=1 panic=5 ${usbbootargs_root} ${mtdparts} cmdlinepart.${mtdparts}
+    # setenv bootargs console=ttyS0,115200 initramfs.runsize=32M usb-storage.delay_use=0 rootdelay=1 panic=5 ${usbbootargs_root}
     setenv bootcmd 'usb start;ext2load usb 0:1 0xa00000 /boot/uImage;ext2load usb 0:1 0xf00000 /boot/uInitrd;bootm 0xa00000 0xf00000'
     boot
 
@@ -112,80 +108,34 @@ Source: https://github.com/ValCher1961/McDebian_WRT3200ACM/wiki/%23-Using-extern
     setenv bootargs 'root=/dev/ram console=ttyS0,115200 :::DB88FXX81:egiga0:none'
     setenv bootcmd 'nand read.e 0xa00000 0x100000 0x300000;nand read.e 0xf00000 0x600000 0x300000;bootm 0xa00000 0xf00000'
 
-------------------------------
+-------------------------------
 
-With fun_plug
--------------
+# Build U-Boot
 
-Limited by embedded linux kernel: 2.6.22.18  
--> Only Debian Squeeze is supported
+    docker-compose run uboot
 
-# Prerequisites
+# Test UBoot with Serial port
 
-## Build debian bootstrap
+    kwboot -p -b u-boot.kwb -B115200 -t /dev/ttyUSB0
 
-    docker-compose up
+> From Marwell console, add delays with ping before reboot, so you can switch serial to kwboot
+>
+>     ping 1;ping 1;reset
 
-## USB Key
+# Persist new u-boot
 
-Format USB to ext3. Minimun 2Gb
+Put `u-boot.kwb` 
 
-# Copy files to `HD_a2`
+    usb reset ; ext2load usb 0:1 0x1000000 /u-boot.kwb
+    nand erase 0x000000 0xe0000
+    nand write 0x1000000 0x000000 0xe0000
+    reset
 
-# Connect with ssh
 
-    ssh root@<nas_hostname>
+Reset environment:
 
-> Password is `dlink`
-
-## First things to do
-
-Change root password:
-
-    passwd
-
-Update apt conf :
-
-    echo 'deb http://archive.debian.org/debian squeeze-lts main' >> /etc/apt/sources.list
-    echo 'Acquire::Check-Valid-Until false;' >> /etc/apt/apt.conf
-
-Set your locales
-
-    #{ echo export LANG=en_US.UTF-8; echo export LANGUAGE=en_US.UTF-8; echo export LC_ALL=en_US.UTF-8; } >> ~/.bashrc
-    #source ~/.bashrc
-    
-    echo en_US.UTF-8 UTF-8 >> /etc/locale.gen
-    dpkg-reconfigure locales
-
-Update apt GPG keys and update apt-cache:
-
-    apt-key list | grep expired | cut -d'/' -f2 | cut -d' ' -f1 | xargs -l apt-key adv --recv-keys --keyserver keys.gnupg.net
-    apt-get update
-
-Install few packages:
-
-    apt-get install -y --force-yes locales gnupg apt-transport-https ca-certificates curl nano
-    # update-ca-certificates
-
-# NFS
-
-https://guide.ubuntu-fr.org/server/network-file-system.html
-
-    apt-get install -y --force-yes install nfs-kernel-server
-    echo "/mnt/HD/HD_a2 *(ro,sync,no_subtree_check)" >> /etc/exports
-    service nfs-kernel-server restart
-
-# Openmediavault
-
-https://openmediavault.readthedocs.io/en/5.x/installation/on_debian.html
-
-    apt-get install --yes gnupg
-    wget --no-check-certificate -O "/etc/apt/trusted.gpg.d/openmediavault-archive-keyring.asc" https://packages.openmediavault.org/public/archive.key
-    apt-key add "/etc/apt/trusted.gpg.d/openmediavault-archive-keyring.asc"
-    apt-get update
-    apt-get install openmediavault-keyring openmediavault
-    apt-get --yes --auto-remove --show-upgraded            --option Dpkg::Options::="--force-confdef"     --option DPkg::Options::="--force-confold"     install openmediavault-keyring openmediavault
-
-# Quickly restart DNS320
-
-    curl 'http://<nas_hostname>/cgi-bin/system_mgr.cgi' -H 'Cookie: username=admin' --data 'cmd=cgi_restart'
+    setenv ethaddr 14:D6:4D:AB:A7:12
+    setenv usbbootargs_root root=/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part1 rw
+    setenv bootargs console=ttyS0,115200 initramfs.runsize=32M usb-storage.delay_use=0 rootdelay=1 ${usbbootargs_root} ${mtdparts} cmdlinepart.${mtdparts}
+    setenv bootcmd 'usb start;ext2load usb 0:1 0xa00000 /boot/uImage;ext2load usb 0:1 0xf00000 /boot/uInitrd;bootm 0xa00000 0xf00000'
+    boot

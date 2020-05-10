@@ -1,0 +1,23 @@
+autoload=no
+baudrate=115200
+bootcmd=if test -n ${bootenv} && usb start; then if run loadbootenv; then echo Loaded environment ${bootenv} from usb;run importbootenv;fi;if test -n ${bootenvcmd}; then echo Running bootenvcmd ...;run bootenvcmd;fi;fi;run setnandbootenv subbootcmd;
+bootdelay=3
+bootenv=uEnv.txt
+console=ttyS0,115200
+ethact=egiga0
+fdtcontroladdr=7b47cd0
+importbootenv=echo Importing environment ...; env import -t ${loadaddr} ${filesize}
+loadaddr=0x800000
+loadbootenv=fatload usb 0 ${loadaddr} ${bootenv}
+mtdparts=mtdparts=orion_nand:1M(u-boot),5M(uImage),5M(ramdisk),102M(image),10M(mini_firmware),-(config)optargs=
+nandloadimage=nand read ${loadaddr} kernel
+nandroot=ubi0:rootfs ubi.mtd=rootfs
+nandrootfstype=ubifs
+setbootargs=setenv bootargs console=${console} ${optargs} ${mtdparts} root=${bootenvroot} rootfstype=${bootenvrootfstype}
+setnandbootenv=echo Booting from nand ...; setenv bootenvroot ${nandroot}; setenv bootenvrootfstype ${nandrootfstype}; setenv bootenvloadimage ${nandloadimage}
+stderr=serial
+stdin=serial
+stdout=serial
+subbootcmd=run setbootargs; if run bootenvloadimage; then bootm ${loadaddr};fi;
+
+Environment size: 1132/131068 bytes
