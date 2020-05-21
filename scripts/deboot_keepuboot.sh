@@ -4,7 +4,7 @@ arch=$1
 suite=$2
 mirror=$3
 
-include="linux-image-marvell,device-tree-compiler,openssh-server,sudo,locales,tzdata,ntpdate,console-data,gnupg,apt-transport-https,ca-certificates,curl,nano,udev,dialog,ifupdown,mtd-utils,procps,iputils-ping,isc-dhcp-client,wget,netbase,net-tools,acl,openssh-server,avahi-daemon,python-minimal,u-boot-tools,hdparm,samba"
+include="linux-image-marvell,openssh-server,sudo,locales,tzdata,ntpdate,console-data,gnupg,apt-transport-https,ca-certificates,curl,nano,udev,dialog,ifupdown,mtd-utils,procps,iputils-ping,isc-dhcp-client,wget,netbase,net-tools,acl,openssh-server,avahi-daemon,python-minimal,u-boot-tools,hdparm,samba"
 hostname=DNS-320
 
 mkdir -p /chroot
@@ -58,27 +58,28 @@ echo 1 > /sys/class/gpio/gpio37/value
 EOF
 chmod +x /chroot/etc/rc.local
 
-# Build u-boot image whenever a new kernel is installed
-# https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/18842374/U-Boot+Images#U-BootImages-FlattenedImageTree
-cp fit.its /chroot/boot
+# Build u-boot images whenever a new kernel is installed
 cat <<'EOF' > /chroot/etc/kernel/postinst.d/zz-local-build-image
 #!/bin/sh -ex
 # passing the kernel version is required
 version="$1"
 [ -z "${version}" ] && exit 0
 
-# FIXME DTB is already embedded in FIT uImage, u-boot should load it
+# NB: change depending on your NAS model
 cat /boot/vmlinuz-${version} /usr/lib/linux-image-${version}/kirkwood-dns320.dtb \
-    > /tmp/vmlinuz-dtb
+    > /tmp/appended_dtb
 
-cp /usr/lib/linux-image-${version}/kirkwood-dns320.dtb /boot/kirkwood-dns320.dtb
-
-# Need device-tree-compiler
-mkimage -f /boot/fit.its /boot/uImage-${version}
-
+/usr/bin/mkimage -A arm -O linux -T kernel -C none -n uImage \
+                 -a 0x00008000 -e 0x00008000 \
+                 -d /tmp/appended_dtb /boot/uImage-${version}
 ln -sf /boot/uImage-${version} /boot/uImage
 
-rm /tmp/vmlinuz-dtb
+/usr/bin/mkimage -A arm -O linux -T ramdisk -C gzip -n uInitrd \
+                 -a 0x00e00000 -e 0x00e00000 \
+                 -d /boot/initrd.img-${version} /boot/uInitrd-${version}
+ln -sf /boot/uInitrd-${version} /boot/uInitrd
+
+rm /tmp/appended_dtb
 EOF
 chmod a+x /chroot/etc/kernel/postinst.d/zz-local-build-image
 
@@ -86,8 +87,8 @@ cat <<'EOF' > /chroot/uEnv.txt
 optargs=initramfs.runsize=32M usb-storage.delay_use=0 rootdelay=1
 bootenvroot=/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part1 rw
 bootenvrootfstype=ext2
-# Because of flaky USB, load uImage in two parts with some delays
-bootenvcmd=run setbootargs;sleep 5;ext4load usb 0:1 0xa00000 /boot/uImage 0xa00000;sleep 10;ext4load usb 0:1 0x1400000 /boot/uImage 0 0xa00000;bootm 0xa00000
+# Because of flaky USB, load images with some delays
+bootenvcmd=run setbootargs;sleep 5;ext2load usb 0:1 0xa00000 /boot/uImage;sleep 10;ext2load usb 0:1 0xf00000 /boot/uInitrd;sleep 5;bootm 0xa00000 0xf00000
 EOF
 
 # All these modules will be stored in the initramfs and always loaded

@@ -1,0 +1,69 @@
+=> bdinfo
+arch_number = 0x00000f91
+boot_params = 0x00000100
+DRAM bank   = 0x00000000
+-> start    = 0x00000000
+-> size     = 0x08000000
+eth0name    = egiga0
+ethaddr     = 14:D6:4D:AB:A7:12
+current eth = egiga0
+ip_addr     = <NULL>
+baudrate    = 115200 bps
+TLB addr    = 0x07ff0000
+relocaddr   = 0x07f6c000
+reloc off   = 0x0796c000
+irq_sp      = 0x07b47cc0
+sp start    = 0x07b47cb0
+fdt_blob    = 0x07b47cd0
+
+=> coninfo
+List of available devices:
+serial   00000003 IO stdin stdout stderr 
+eserial0 00000003 IO 
+nc       00000003 IO 
+
+=> usb tree
+USB device tree:
+  1  Hub (480 Mb/s, 0mA)
+  |  u-boot EHCI Host Controller 
+  |
+  +-2  Mass Storage (480 Mb/s, 200mA)
+                USB DISK 90B11900CFB902DC
+     
+=> usb info
+1: Hub,  USB Revision 2.0
+ - u-boot EHCI Host Controller 
+ - Class: Hub
+ - PacketSize: 64  Configurations: 1
+ - Vendor: 0x0000  Product 0x0000 Version 1.0
+   Configuration: 1
+   - Interfaces: 1 Self Powered 0mA
+     Interface: 0
+     - Alternate Setting 0, Endpoints: 1
+     - Class Hub
+     - Endpoint 1 In Interrupt MaxPacket 8 Interval 255ms
+
+2: Mass Storage,  USB Revision 2.0
+ -          USB DISK 90B11900CFB902DC
+ - Class: (from Interface) Mass Storage
+ - PacketSize: 64  Configurations: 1
+ - Vendor: 0x1234  Product 0xffff Version 1.0
+   Configuration: 1
+   - Interfaces: 1 Bus Powered 200mA
+     Interface: 0
+     - Alternate Setting 0, Endpoints: 2
+     - Class Mass Storage, Transp. SCSI, Bulk only
+     - Endpoint 1 In Bulk MaxPacket 512
+     - Endpoint 2 Out Bulk MaxPacket 512
+
+=> usb storage
+  Device 0: Vendor:          Rev: PMAP Prod: USB DISK        
+            Type: Removable Hard Disk
+            Capacity: 1920.0 MB = 1.8 GB (3932160 x 512)
+
+=> usb part
+
+Partition Map for USB device 0  --   Partition Type: DOS
+
+Part	Start Sector	Num Sectors	UUID		Type
+  1	2048      	3930112   	da1f00aa-01	83 Boot

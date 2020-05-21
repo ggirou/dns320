@@ -19,3 +19,11 @@ services:
       - "./scripts:/scripts"
       - "./dist/uboot:/dist"
       - "./u-boot:/uboot"
+  tftp:
+    image: pghalliday/tftp
+    ports:
+      - "192.168.1.23:69:69/udp"
+    volumes:
+      - "./scripts:/scripts"
+      # - "./dist/boot:/srv/tftp"
+      - "./dist/boot:/var/tftpboot"
