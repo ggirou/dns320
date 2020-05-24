@@ -67,18 +67,12 @@ cat <<'EOF' > /chroot/etc/kernel/postinst.d/zz-local-build-image
 version="$1"
 [ -z "${version}" ] && exit 0
 
-# FIXME DTB is already embedded in FIT uImage, u-boot should load it
-cat /boot/vmlinuz-${version} /usr/lib/linux-image-${version}/kirkwood-dns320.dtb \
-    > /tmp/vmlinuz-dtb
-
 cp /usr/lib/linux-image-${version}/kirkwood-dns320.dtb /boot/kirkwood-dns320.dtb
 
 # Need device-tree-compiler
 mkimage -f /boot/fit.its /boot/uImage-${version}
 
 ln -sf /boot/uImage-${version} /boot/uImage
-
-rm /tmp/vmlinuz-dtb
 EOF
 chmod a+x /chroot/etc/kernel/postinst.d/zz-local-build-image
 

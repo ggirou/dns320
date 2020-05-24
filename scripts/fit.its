@@ -7,7 +7,7 @@
     images {
         kernel-0 {
             description = "Linux Kernel";
-            data = /incbin/("/tmp/vmlinuz-dtb");
+            data = /incbin/("/vmlinuz");
             type = "kernel";
             arch = "arm";
             os = "linux";
