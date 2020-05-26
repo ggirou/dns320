@@ -89,6 +89,8 @@ If you want to:
 
 # Serial boot
 
+![Serial pinout](serial.jpg)
+
     screen -L /dev/ttyUSB0 115200
 
 At the `Hit any key to stop autoboot` prompt, press `space` then `1` (can be done before). You should see u-boot prompt:

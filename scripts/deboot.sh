@@ -84,7 +84,7 @@ mkdir -p /mnt/ubifs
   && modprobe ubi \
   && ubiattach /dev/ubi_ctrl -m 2 \
   && mount -t ubifs /dev/ubi0_0 /mnt/ubifs \
-  && cp /boot/uImage /mnt/ubifs/ \
+  && cp --backup --suffix .old /boot/uImage /mnt/ubifs/ \
   && umount /mnt/ubifs \
   && ubidetach /dev/ubi_ctrl -m 2
 
@@ -95,7 +95,7 @@ cat <<'EOF' > /chroot/uEnv.txt
 optargs=initramfs.runsize=32M usb-storage.delay_use=0 rootdelay=1
 bootenvroot=/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part1 rw
 bootenvrootfstype=ext2
-ubifsloadimage=ubi part rootfs && ubifsmount ubi:rootfs && ubifsload ${loadaddr} /uImage
+ubifsloadimage=ubi part rootfs && ubifsmount ubi:rootfs && ubifsload ${loadaddr} /uImage || ubifsload ${loadaddr} /uImage.old
 # Because of flaky USB, load uImage in two parts with some delays
 usbloadimage=sleep 5 && ext4load usb 0:1 0xa00000 /boot/uImage 0xa00000 && sleep 10 && ext4load usb 0:1 0x1400000 /boot/uImage 0 0xa00000 && setenv loadaddr 0xa00000
 bootenvcmd=run setbootargs; run ubifsloadimage || run usbloadimage; bootm ${loadaddr}
