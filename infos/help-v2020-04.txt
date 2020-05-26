@@ -1,3 +1,4 @@
+=> help
 ?         - alias for 'help'
 base      - print or set address offset
 bdinfo    - print Board Info structure
@@ -71,3 +72,52 @@ ubifsumount- unmount UBIFS volume
 usb       - USB sub-system
 usbboot   - boot from USB device
 version   - print monitor, compiler and linker version
+
+
+=> help ubi
+ubi - ubi commands
+
+Usage:
+ubi detach - detach ubi from a mtd partition
+ubi part [part] [offset]
+ - Show or set current partition (with optional VID header offset)
+ubi info [l[ayout]] - Display volume and ubi layout information
+ubi check volumename - check if volumename exists
+ubi create[vol] volume [size] [type] [id] [--skipcheck]
+ - create volume name with size ('-' for maximum available size)
+ubi write[vol] address volume size - Write volume from address with size
+ubi write.part address volume size [fullsize]
+ - Write part of a volume from address
+ubi read[vol] address volume [size] - Read volume to address with size
+ubi remove[vol] volume - Remove volume
+ubi skipcheck volume on/off - Set or clear skip_check flag in volume header
+[Legends]
+ volume: character name
+ size: specified in bytes
+ type: s[tatic] or d[ynamic] (default=dynamic)
+
+
+=> help nand
+nand - NAND sub-system
+
+Usage:
+nand info - show available NAND devices
+nand device [dev] - show or set current device
+nand read - addr off|partition size
+nand write - addr off|partition size
+    read/write 'size' bytes starting at offset 'off'
+    to/from memory address 'addr', skipping bad blocks.
+nand read.raw - addr off|partition [count]
+nand write.raw[.noverify] - addr off|partition [count]
+    Use read.raw/write.raw to avoid ECC and access the flash as-is.
+nand erase[.spread] [clean] off size - erase 'size' bytes from offset 'off'
+    With '.spread', erase enough for given file size, otherwise,
+    'size' includes skipped bad blocks.
+nand erase.part [clean] partition - erase entire mtd partition'
+nand erase.chip [clean] - erase entire chip'
+nand bad - show bad blocks
+nand dump[.oob] off - dump page
+nand scrub [-y] off size | scrub.part partition | scrub.chip
+    really clean NAND erasing bad blocks (UNSAFE)
+nand markbad off [...] - mark bad block(s) at offset (UNSAFE)
+nand biterr off - make a bit error at offset (UNSAFE)

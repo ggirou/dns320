@@ -60,6 +60,10 @@ chmod +x /chroot/etc/rc.local
 
 # Build u-boot image whenever a new kernel is installed
 # https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/18842374/U-Boot+Images#U-BootImages-FlattenedImageTree
+# Quick test from DNS320 only
+# /etc/kernel/postinst.d/zz-local-build-image $(uname -r)
+# Full test (from DNS320 for UBIFS commands)
+# dpkg-reconfigure $(dpkg --get-selections | egrep 'linux-image-[0-9]' | cut -f1)
 cp fit.its /chroot/boot
 cat <<'EOF' > /chroot/etc/kernel/postinst.d/zz-local-build-image
 #!/bin/sh -ex
@@ -73,6 +77,17 @@ cp /usr/lib/linux-image-${version}/kirkwood-dns320.dtb /boot/kirkwood-dns320.dtb
 mkimage -f /boot/fit.its /boot/uImage-${version}
 
 ln -sf /boot/uImage-${version} /boot/uImage
+
+# Copy uImage to Nand UBIFS partition if exists
+mkdir -p /mnt/ubifs
+[ -c /dev/mtd2 ] \
+  && modprobe ubi \
+  && ubiattach /dev/ubi_ctrl -m 2 \
+  && mount -t ubifs /dev/ubi0_0 /mnt/ubifs \
+  && cp /boot/uImage /mnt/ubifs/ \
+  && umount /mnt/ubifs \
+  && ubidetach /dev/ubi_ctrl -m 2
+
 EOF
 chmod a+x /chroot/etc/kernel/postinst.d/zz-local-build-image
 
@@ -80,8 +95,10 @@ cat <<'EOF' > /chroot/uEnv.txt
 optargs=initramfs.runsize=32M usb-storage.delay_use=0 rootdelay=1
 bootenvroot=/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part1 rw
 bootenvrootfstype=ext2
+ubifsloadimage=ubi part rootfs && ubifsmount ubi:rootfs && ubifsload ${loadaddr} /uImage
 # Because of flaky USB, load uImage in two parts with some delays
-bootenvcmd=run setbootargs;sleep 5;ext4load usb 0:1 0xa00000 /boot/uImage 0xa00000;sleep 10;ext4load usb 0:1 0x1400000 /boot/uImage 0 0xa00000;bootm 0xa00000
+usbloadimage=sleep 5 && ext4load usb 0:1 0xa00000 /boot/uImage 0xa00000 && sleep 10 && ext4load usb 0:1 0x1400000 /boot/uImage 0 0xa00000 && setenv loadaddr 0xa00000
+bootenvcmd=run setbootargs; run ubifsloadimage || run usbloadimage; bootm ${loadaddr}
 EOF
 
 # All these modules will be stored in the initramfs and always loaded
@@ -95,8 +112,8 @@ kirkwood_thermal
 # SATA
 ehci_orion
 sata_mv
-# Nand
-orion_nand
+# UBIFS
+ubi
 # Ethernet
 mv643xx_eth
 marvell

@@ -3,17 +3,20 @@ Run Debian on DNS320
 
 Everything here comes essentially from:
 
-- https://jamie.lentin.co.uk/devices/dlink-dns325/ : great tutorials about how to boot Debian on DNS-320 and how to replace u-boot firmware
-- https://github.com/avoidik/board_dns320 : patch files to build last version of u-boot for DNS-320
+- https://jamie.lentin.co.uk/devices/dlink-dns325/ : great tutorials how to boot Debian on DNS-320 and how to replace u-boot firmware
+- https://github.com/avoidik/board_dns320 : patch files to build u-boot for DNS-320
+- https://forum.doozan.com/read.php?3,35295 : patch to fix flaky USB `EHCI timed out on TD - token=`
 
 Other links:
 - Firmwares and documentations: ftp://ftp.dlink.eu/Products/dns/dns-320/
-- My original DLink firmware version: 2.03
 - Wikis: http://dns323.kood.org/dns-320
 - Linux kernel support: https://www.kernel.org/doc/html/latest/arm/marvel.html
 - U-Boot:
   - http://www.denx.de/wiki/U-Boot
   - https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/18842374/U-Boot+Images
+- Managing flash storage with Linux : https://bootlin.com/blog/managing-flash-storage-with-linux/
+
+**My original DLink firmware version: 2.03**
 
 > **DISCLAIMER NOTICE**
 > * I'm not responsible for bricked devices, dead SD cards, thermonuclear war, or you getting fired because the alarm app failed (like it did for me...).
@@ -112,40 +115,32 @@ First, keep current u-boot parameters:
 Try to boot with following commands :
 
     setenv ethaddr 14:D6:4D:AB:A7:12
+    setenv setbootargs 'setenv bootargs console=${console} ${optargs} ${mtdparts} cmdlinepart.${mtdparts} root=${bootenvroot} rootfstype=${bootenvrootfstype}'
     setenv loadbootenv ext2load usb 0:1 ${loadaddr} ${bootenv}
     boot
 
-> New default boot commands try to load `uEnv.txt` from USB FAT partition, just change `loadbootenv` to load from ext2.
+> UBIFS partition is not ready yet, it should fail to load from it (see ubifs setup bellow). It should fallback to USB image load.
 
-## `uEnv.txt` examples
+> New default boot commands try to load `uEnv.txt` from USB FAT partition, just change `loadbootenv` to load from ext2.  
+> The `mtdparts` option had became `cmdlinepart.mtdparts` (in Debian-land, at least). [StackExchange](https://unix.stackexchange.com/q/554266)
 
-### To boot with new Flat Image Tree (FIT)
+## `uEnv.txt` configuration
 
-> See `/etc/kernel/postinst.d/zz-local-build-image` created by [`deboot.sh`](scripts/deboot.sh) to know how to build FIT uImage
+`/uEnv.txt` file is already configured to load Flat Image Tree (FIT) uImage from UBIFS partition first, and fallback to USB on failing.
 
     optargs=initramfs.runsize=32M usb-storage.delay_use=0 rootdelay=1
     bootenvroot=/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part1 rw
     bootenvrootfstype=ext2
+    ubifsloadimage=ubi part rootfs && ubifsmount ubi:rootfs && ubifsload ${loadaddr} /uImage
     # Because of flaky USB, load uImage in two parts with some delays
-    bootenvcmd=run setbootargs;sleep 5;ext4load usb 0:1 0xa00000 /boot/uImage 0xa00000;sleep 10;ext4load usb 0:1 0x1400000 /boot/uImage 0 0xa00000;bootm 0xa00000
+    usbloadimage=sleep 5 && ext4load usb 0:1 0xa00000 /boot/uImage 0xa00000 && sleep 10 && ext4load usb 0:1 0x1400000 /boot/uImage 0 0xa00000 && setenv loadaddr 0xa00000
+    bootenvcmd=run setbootargs; run ubifsloadimage || run usbloadimage; bootm ${loadaddr}
 
 > Notes:  
-> Because of a bug with `ext2load`, it doesn't work with `pos` argument, use `ext4load` instead...  
->
-> USB boot root works with `usbbootargs_root root=/dev/sda1 rw` if no disks.  
-> With disks it's not sure usb key will be affected to `sda`.  
-> Use full path to be sure.
+> See `/etc/kernel/postinst.d/zz-local-build-image` created by [`deboot.sh`](scripts/deboot.sh) to know how to build FIT uImage and how it is copied to UBIFS.
 >
 > `initramfs.runsize` 10% by default, fit it to 32M  
-> The mtdparts option had became cmdlinepart.mtdparts (in Debian-land, at least). [StackExchange](https://unix.stackexchange.com/q/554266)
-
-### To boot with legacy images
-
-    optargs=initramfs.runsize=32M usb-storage.delay_use=0 rootdelay=1
-    bootenvroot=/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part1 rw
-    bootenvrootfstype=ext2
-    # Because of flaky USB, load images with some delays
-    bootenvcmd=run setbootargs;sleep 5;ext2load usb 0:1 0xa00000 /boot/uImage;sleep 10;ext2load usb 0:1 0xf00000 /boot/uInitrd;sleep 5;bootm 0xa00000 0xf00000
+> Because of a bug with `ext2load`, it doesn't work with `pos` argument, use `ext4load` instead...
 
 # Persist new u-boot
 
@@ -165,9 +160,28 @@ First, keep current new u-boot parameters:
 Reset env ands save them:
 
     setenv ethaddr 14:D6:4D:AB:A7:12
+    setenv setbootargs 'setenv bootargs console=${console} ${optargs} ${mtdparts} cmdlinepart.${mtdparts} root=${bootenvroot} rootfstype=${bootenvrootfstype}'
     setenv loadbootenv ext2load usb 0:1 ${loadaddr} ${bootenv}
     saveenv
     reset
+
+# Setup UBIFS partition
+
+From u-boot shell, create UBI partition and volume:
+
+> **WARNING! following commands erase everything on nand `rootfs` partition**
+
+    nand erase.part rootfs
+    ubi part rootfs
+    ubi createvol rootfs
+
+Boot debian, then run:
+
+    sudo /etc/kernel/postinst.d/zz-local-build-image $(uname -r)
+
+> It builds uImage and copies it to Nand UBIFS partition
+
+Reboot and u-boot should load uImage from UBIFS partition.
 
 # Load Images With U-Boot Via TFTP
 
