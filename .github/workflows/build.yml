@@ -25,10 +25,10 @@ jobs:
     - name: Build docker image
       run: docker-compose build
 
-    - name: Debootstrap Debian using docker
-      run: |
-        modprobe binfmt_misc
-        docker-compose run deboot
+    # - name: Debootstrap Debian using docker
+    #   run: |
+    #     modprobe binfmt_misc
+    #     docker-compose run deboot
 
     - name: Build u-boot using docker
       run: |
