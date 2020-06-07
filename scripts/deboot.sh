@@ -64,7 +64,7 @@ chmod +x /chroot/etc/rc.local
 # /etc/kernel/postinst.d/zz-local-build-image $(uname -r)
 # Full test (from DNS320 for UBIFS commands)
 # dpkg-reconfigure $(dpkg --get-selections | egrep 'linux-image-[0-9]' | cut -f1)
-cp fit.its /chroot/boot
+cp /scripts/fit.its /chroot/boot
 cat <<'EOF' > /chroot/etc/kernel/postinst.d/zz-local-build-image
 #!/bin/sh -ex
 # passing the kernel version is required
@@ -80,14 +80,14 @@ ln -sf /boot/uImage-${version} /boot/uImage
 
 # Copy uImage to Nand UBIFS partition if exists
 mkdir -p /mnt/ubifs
-[ -c /dev/mtd2 ] \
-  && modprobe ubi \
-  && ubiattach /dev/ubi_ctrl -m 2 \
-  && mount -t ubifs /dev/ubi0_0 /mnt/ubifs \
-  && cp --backup --suffix .old /boot/uImage /mnt/ubifs/ \
-  && umount /mnt/ubifs \
-  && ubidetach /dev/ubi_ctrl -m 2
-
+if [ -c /dev/mtd2 ]; then
+  modprobe ubi
+  ubiattach /dev/ubi_ctrl -m 2
+  mount -t ubifs /dev/ubi0_0 /mnt/ubifs
+  cp --backup --suffix .old /boot/uImage /mnt/ubifs/
+  umount /mnt/ubifs
+  ubidetach /dev/ubi_ctrl -m 2
+fi
 EOF
 chmod a+x /chroot/etc/kernel/postinst.d/zz-local-build-image
 
@@ -151,6 +151,7 @@ rm /tmp/* /var/tmp/* /var/lib/apt/lists/*   /var/cache/debconf/* /var/log/*.log 
 EOF
 
 tar czf /dist/$suite-$arch.final.tar.gz -C /chroot/ .
+cp /chroot/boot/uImage-* /dist/uImage
 
 # Debugging
 ls -lah /chroot/boot
@@ -161,5 +162,5 @@ cat /chroot/etc/locale.gen | egrep '^[^#]'
 cat /chroot/etc/timezone
 
 cat /chroot/etc/fstab
-cat /chroot/chroot/etc/kernel/postinst.d/zz-local-build-image
+cat /chroot/etc/kernel/postinst.d/zz-local-build-image
 cat /chroot/etc/initramfs-tools/modules

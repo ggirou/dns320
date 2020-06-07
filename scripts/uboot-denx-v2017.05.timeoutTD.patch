@@ -1,0 +1,353 @@
+# To apply these patches, cd to the  directory,
+#  and do 'patch -b -p1 <this_file'
+--- u-boot-2017.05/cmd/usb.c	2017-05-08 09:11:08.000000000 -0500
++++ u-boot-2017.05-timeoutfixed/cmd/usb.c	2017-05-28 11:12:37.601183280 -0500
+@@ -755,9 +755,10 @@
+ 				" ... ", usb_stor_curr_dev, blk, cnt);
+ 			stor_dev = blk_get_devnum_by_type(IF_TYPE_USB,
+ 							  usb_stor_curr_dev);
++			i = get_timer(0);
+ 			n = blk_dread(stor_dev, blk, cnt, (ulong *)addr);
+-			printf("%ld blocks read: %s\n", n,
+-				(n == cnt) ? "OK" : "ERROR");
++			printf("%5ld blocks read: %s in %5lu ms\n", n,
++			       (n == cnt) ? "OK   " : "ERROR", get_timer(i));
+ 			if (n == cnt)
+ 				return 0;
+ 			return 1;
+--- u-boot-2017.05/common/usb.c	2017-05-08 09:11:08.000000000 -0500
++++ u-boot-2017.05-timeoutfixed/common/usb.c	2017-06-05 17:05:47.065474839 -0500
+@@ -924,14 +924,19 @@
+ 	__maybe_unused struct usb_device_descriptor *desc;
+ 	ALLOC_CACHE_ALIGN_BUFFER(unsigned char, tmpbuf, USB_BUFSIZ);
+ 	int err;
++	int retry = 5;
+ 
+ 	desc = (struct usb_device_descriptor *)tmpbuf;
+ 
++again:
+ 	err = usb_get_descriptor(dev, USB_DT_DEVICE, 0, desc, len);
+ 	if (err < expect_len) {
+ 		if (err < 0) {
+-			printf("unable to get device descriptor (error=%d)\n",
+-				err);
++			printf("unable to get device descriptor (error=%d) retry: %d\n",
++			       err, retry);
++			mdelay(50);
++			if (--retry >= 0)
++			   goto again; /* Some drives are just slow to wake up. */
+ 			return err;
+ 		} else {
+ 			printf("USB device descriptor short read (expected %i, got %i)\n",
+--- u-boot-2017.05/common/usb_storage.c	2017-05-08 09:11:08.000000000 -0500
++++ u-boot-2017.05-timeoutfixed/common/usb_storage.c	2017-06-05 17:05:47.081475749 -0500
+@@ -111,6 +111,8 @@
+ #define USB_MAX_XFER_BLK	20
+ #endif
+ 
++int usb_max_xfer_blk = USB_MAX_XFER_BLK;
++
+ #ifndef CONFIG_BLK
+ static struct us_data usb_stor[USB_MAX_STOR_DEV];
+ #endif
+@@ -314,7 +316,7 @@
+ 		printf("       scanning usb for storage devices... ");
+ 
+ #ifndef CONFIG_DM_USB
+-	unsigned char i;
++	int i;
+ 
+ 	usb_disable_asynch(1); /* asynch transfer not allowed */
+ 
+@@ -743,6 +745,7 @@
+ 	pipeout = usb_sndbulkpipe(us->pusb_dev, us->ep_out);
+ 	/* DATA phase + error handling */
+ 	data_actlen = 0;
++	mdelay(10);		/* Like linux does. */
+ 	/* no data, go immediately to the STATUS phase */
+ 	if (srb->datalen == 0)
+ 		goto st;
+@@ -754,6 +757,13 @@
+ 
+ 	result = usb_bulk_msg(us->pusb_dev, pipe, srb->pdata, srb->datalen,
+ 			      &data_actlen, USB_CNTL_TIMEOUT * 5);
++	/* special handling of XACTERR in DATA phase */
++	if ((result < 0) && (us->pusb_dev->status & USB_ST_XACTERR)) {
++	   debug("XACTERR in data phase.  Clear, reset, and return fail.\n");
++	   usb_stor_BBB_clear_endpt_stall(us, dir_in ? us->ep_in : us->ep_out);
++	   usb_stor_BBB_reset(us);
++	   return USB_STOR_TRANSPORT_FAILED;
++	}
+ 	/* special handling of STALL in DATA phase */
+ 	if ((result < 0) && (us->pusb_dev->status & USB_ST_STALLED)) {
+ 		debug("DATA:stall\n");
+@@ -994,9 +1004,32 @@
+ 	return 0;
+ }
+ 
++/* This spins up the disk and also consumes the time that the
++ * disk takes to become active and ready to read data.
++ * Some drives (like Western Digital) can take more than 5 seconds.
++ * The delay occurs on the 1st data read from the disk.
++ * Extending the timeout here works better than handling the timeout
++ * as an error on a "real" read operation. */
++static int usb_spinup(ccb *srb, struct us_data *ss)
++{
++        memset(&srb->cmd[0], 0, 12);
++	srb->cmd[0] = SCSI_START_STP;
++	srb->cmd[1] = srb->lun << 5;
++	srb->cmd[4] = 1;	/* Start spinup. */
++	srb->datalen = 0;
++	srb->cmdlen = 6;
++	ss->pusb_dev->extra_timout = 9876;
++	ss->transport(srb, ss);
++	ss->pusb_dev->extra_timout = 0;
++	return 0;
++}
++
++
++
+ static int usb_test_unit_ready(ccb *srb, struct us_data *ss)
+ {
+ 	int retries = 10;
++	int gave_extra_time = 0;
+ 
+ 	do {
+ 		memset(&srb->cmd[0], 0, 12);
+@@ -1019,6 +1052,13 @@
+ 		if ((srb->sense_buf[2] == 0x02) &&
+ 		    (srb->sense_buf[12] == 0x3a))
+ 			return -1;
++		/* If the status is "Not Ready - becoming ready", give it
++		 * more time.  Linux issues a spinup command (once) and gives
++		 * it 100 seconds. */
++		if (srb->sense_buf[2] == 0x02 && srb->sense_buf[12] == 0x04 &&
++		    gave_extra_time == 0)
++		   gave_extra_time = retries = 100; /* Allow 10 seconds. */
++		
+ 		mdelay(100);
+ 	} while (retries--);
+ 
+@@ -1122,6 +1162,7 @@
+ 
+ 	if (blkcnt == 0)
+ 		return 0;
++	usb_max_xfer_blk = getenv_ulong("usb_max_blk", 10, USB_MAX_XFER_BLK);
+ 	/* Setup  device */
+ #ifdef CONFIG_BLK
+ 	block_dev = dev_get_uclass_platdata(dev);
+@@ -1147,21 +1188,50 @@
+ 	      PRIxPTR "\n", block_dev->devnum, start, blks, buf_addr);
+ 
+ 	do {
+-		/* XXX need some comment here */
++		/* Probably most errors are USB errors, not hard disk error.
++		 * Many disks use a USB chip that is flaky when doing large transfers.  The workaround
++		 * is to dynamically reduce the transfer size and allow an additional try.
++		 * This should pick up flaky disks.  Linux uses a quirks table.  We'll use observation.
++		 * Give it 1 try very large, 1 try large, 2 tries medium and 2 tries small(ish).
++		 * On a solid fail (actual disk error)(which should be rare), this will give us 6 tries max,
++		 * and only that many if the read is quite large.
++		 * A fail on a very short read obviously doesn't have a too-large max_blks.  Timeout
++		 * due to Spinup being a case in point.
++		 */
+ 		retry = 2;
+ 		srb->pdata = (unsigned char *)buf_addr;
+-		if (blks > USB_MAX_XFER_BLK)
+-			smallblks = USB_MAX_XFER_BLK;
++retry_it:
++		if (blks > usb_max_xfer_blk)
++			smallblks = usb_max_xfer_blk;
+ 		else
+ 			smallblks = (unsigned short) blks;
+-retry_it:
+-		if (smallblks == USB_MAX_XFER_BLK)
++		if (smallblks == usb_max_xfer_blk)
+ 			usb_show_progress();
+ 		srb->datalen = block_dev->blksz * smallblks;
+ 		srb->pdata = (unsigned char *)buf_addr;
+ 		if (usb_read_10(srb, ss, start, smallblks)) {
+ 			debug("Read ERROR\n");
+ 			usb_request_sense(srb, ss);
++			if (smallblks > 2047) {	/* Dynamically reduce the I/O size. */
++			   usb_max_xfer_blk = 2047;
++			   debug("step down usb_max_xfer_blk to %d\n", usb_max_xfer_blk);
++			    ++retry;
++			}
++			else if (smallblks > 512) {
++			   usb_max_xfer_blk = 512;
++			   debug("step down usb_max_xfer_blk to %d\n", usb_max_xfer_blk);
++			   ++retry;
++			}
++			else if (smallblks > 511) {
++			   usb_max_xfer_blk = 511;
++			   debug("step down usb_max_xfer_blk to %d\n", usb_max_xfer_blk);
++			   ++retry;
++			}
++			else if (smallblks > 63) {
++			   usb_max_xfer_blk = 63;
++			   debug("step down usb_max_xfer_blk to %d\n", usb_max_xfer_blk);
++			   retry += 2;
++			}
+ 			if (retry--)
+ 				goto retry_it;
+ 			blkcnt -= blks;
+@@ -1178,8 +1248,6 @@
+ 	      start, smallblks, buf_addr);
+ 
+ 	usb_disable_asynch(0); /* asynch transfer allowed */
+-	if (blkcnt >= USB_MAX_XFER_BLK)
+-		debug("\n");
+ 	return blkcnt;
+ }
+ 
+@@ -1205,13 +1273,14 @@
+ 	if (blkcnt == 0)
+ 		return 0;
+ 
++	usb_max_xfer_blk = getenv_ulong("usb_max_blk", 10, USB_MAX_XFER_BLK);
+ 	/* Setup  device */
+ #ifdef CONFIG_BLK
+ 	block_dev = dev_get_uclass_platdata(dev);
+ 	udev = dev_get_parent_priv(dev_get_parent(dev));
+-	debug("\nusb_read: udev %d\n", block_dev->devnum);
++	debug("\nusb_write: udev %d\n", block_dev->devnum);
+ #else
+-	debug("\nusb_read: udev %d\n", block_dev->devnum);
++	debug("\nusb_write: udev %d\n", block_dev->devnum);
+ 	udev = usb_dev_desc[block_dev->devnum].priv;
+ 	if (!udev) {
+ 		debug("%s: No device\n", __func__);
+@@ -1236,12 +1305,12 @@
+ 		 */
+ 		retry = 2;
+ 		srb->pdata = (unsigned char *)buf_addr;
+-		if (blks > USB_MAX_XFER_BLK)
+-			smallblks = USB_MAX_XFER_BLK;
++		if (blks > usb_max_xfer_blk)
++			smallblks = usb_max_xfer_blk;
+ 		else
+ 			smallblks = (unsigned short) blks;
+ retry_it:
+-		if (smallblks == USB_MAX_XFER_BLK)
++		if (smallblks == usb_max_xfer_blk)
+ 			usb_show_progress();
+ 		srb->datalen = block_dev->blksz * smallblks;
+ 		srb->pdata = (unsigned char *)buf_addr;
+@@ -1263,8 +1332,6 @@
+ 	      PRIxPTR "\n", start, smallblks, buf_addr);
+ 
+ 	usb_disable_asynch(0); /* asynch transfer allowed */
+-	if (blkcnt >= USB_MAX_XFER_BLK)
+-		debug("\n");
+ 	return blkcnt;
+ 
+ }
+@@ -1470,6 +1537,7 @@
+ 	dev_desc->log2blksz = LOG2(dev_desc->blksz);
+ 	dev_desc->type = perq;
+ 	debug(" address %d\n", dev_desc->target);
++	usb_spinup(pccb, ss);
+ 
+ 	return 1;
+ }
+--- u-boot-2017.05/drivers/usb/host/ehci-hcd.c	2017-05-08 09:11:08.000000000 -0500
++++ u-boot-2017.05-timeoutfixed/drivers/usb/host/ehci-hcd.c	2017-06-05 17:05:47.153476391 -0500
+@@ -313,7 +313,9 @@
+ 	int timeout;
+ 	int ret = 0;
+ 	struct ehci_ctrl *ctrl = ehci_get_ctrl(dev);
++	int trynum;
+ 
++	debug("\n***** ehci_submit_async ****\n");
+ 	debug("dev=%p, pipe=%lx, buffer=%p, length=%d, req=%p\n", dev, pipe,
+ 	      buffer, length, req);
+ 	if (req != NULL)
+@@ -552,6 +554,15 @@
+ 	ehci_writel(&ctrl->hcor->or_usbsts, (usbsts & 0x3f));
+ 
+ 	/* Enable async. schedule. */
++	trynum = 1;	/* No more than 2 tries, in case of XACTERR. */
++	/* When the 1st try gets xacterr,
++	 * 2nd try gets xacterr and often babble and/or halted.
++	 * 3rd try times out.
++	 * After the 2nd try, the disk has recovered, so we need to clear and
++	 * reset the USB port, then return fail so the upper layer can retry.
++	 */
++   retry_xacterr:;	
++	vtd = &qtd[qtd_counter - 1];
+ 	cmd = ehci_readl(&ctrl->hcor->or_usbcmd);
+ 	cmd |= CMD_ASE;
+ 	ehci_writel(&ctrl->hcor->or_usbcmd, cmd);
+@@ -565,8 +576,8 @@
+ 
+ 	/* Wait for TDs to be processed. */
+ 	ts = get_timer(0);
+-	vtd = &qtd[qtd_counter - 1];
+ 	timeout = USB_TIMEOUT_MS(pipe);
++	timeout += dev->extra_timout;
+ 	do {
+ 		/* Invalidate dcache */
+ 		invalidate_dcache_range((unsigned long)&ctrl->qh_list,
+@@ -581,7 +592,8 @@
+ 			break;
+ 		WATCHDOG_RESET();
+ 	} while (get_timer(ts) < timeout);
+-
++	debug("took %4lu ms of %4d\n", get_timer(ts), timeout);
++	
+ 	/*
+ 	 * Invalidate the memory area occupied by buffer
+ 	 * Don't try to fix the buffer alignment, if it isn't properly
+@@ -613,6 +625,20 @@
+ 	token = hc32_to_cpu(qh->qh_overlay.qt_token);
+ 	if (!(QT_TOKEN_GET_STATUS(token) & QT_TOKEN_STATUS_ACTIVE)) {
+ 		debug("TOKEN=%#x\n", token);
++		if (token & QT_TOKEN_STATUS_XACTERR) {
++	   	   if (--trynum >= 0) {	/* It is necessary to do this, otherwise the disk is clagged. */
++	   	      debug("reset the TD and redo, because of XACTERR\n");
++	   	      token &= ~QT_TOKEN_STATUS_HALTED;
++	   	      token |= QT_TOKEN_STATUS_ACTIVE | QT_TOKEN_CERR(2);
++	   	      vtd->qt_token = cpu_to_hc32(token);
++	   	      qh->qh_overlay.qt_token = cpu_to_hc32(token);
++	   	      goto retry_xacterr;
++	   	   }
++	   	   dev->status = USB_ST_XACTERR;
++		   dev->act_len = length - QT_TOKEN_GET_TOTALBYTES(token);
++		   goto fail;
++		}
++
+ 		switch (QT_TOKEN_GET_STATUS(token) &
+ 			~(QT_TOKEN_STATUS_SPLITXSTATE | QT_TOKEN_STATUS_PERR)) {
+ 		case 0:
+--- u-boot-2017.05/include/usb_defs.h	2017-05-08 09:11:08.000000000 -0500
++++ u-boot-2017.05-timeoutfixed/include/usb_defs.h	2017-05-28 11:09:32.328822545 -0500
+@@ -197,6 +197,7 @@
+ #define USB_ST_NAK_REC          0x10	/* NAK Received*/
+ #define USB_ST_CRC_ERR          0x20	/* CRC/timeout Error */
+ #define USB_ST_BIT_ERR          0x40	/* Bitstuff error */
++#define USB_ST_XACTERR          0x80	/* XACTERR error */
+ #define USB_ST_NOT_PROC         0x80000000L	/* Not yet processed */
+ 
+ 
+--- u-boot-2017.05/include/usb.h	2017-05-08 09:11:08.000000000 -0500
++++ u-boot-2017.05-timeoutfixed/include/usb.h	2017-06-05 17:05:47.185474115 -0500
+@@ -141,6 +141,7 @@
+ 	int act_len;			/* transferred bytes */
+ 	int maxchild;			/* Number of ports if hub */
+ 	int portnr;			/* Port number, 1=first */
++        int extra_timout;		/* add to timeout in ehci_submit_async */
+ #ifndef CONFIG_DM_USB
+ 	/* parent hub, or NULL if this is the root hub */
+ 	struct usb_device *parent;
+--- u-boot-2017.05/Makefile	2017-05-08 09:11:08.000000000 -0500
++++ u-boot-2017.05-timeoutfixed/Makefile	2017-05-28 12:25:51.189168488 -0500
+@@ -4,7 +4,7 @@
+ 
+ VERSION = 2017
+ PATCHLEVEL = 05
+-SUBLEVEL =
++SUBLEVEL = timeoutTD-fixed
+ EXTRAVERSION =
+ NAME =
+ 

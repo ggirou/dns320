@@ -1,27 +1,30 @@
 #!/bin/sh -ex
 
-# https://github.com/u-boot/u-boot.git
-# Original from https://gitlab.denx.de/u-boot/custodians/u-boot-marvell.git
-[ -d u-boot ] || git clone -b v2020.04-dns320 https://github.com/ggirou/u-boot.git
+version=v2020.04
+dir=/dist/u-boot
 
-cd u-boot
-git pull
+if [ ! -d $dir ]; then
+  git clone -b $version https://github.com/u-boot/u-boot.git $dir
+  cd $dir
+else
+  cd $dir
+  git reset --hard tags/$version
+fi
 
-export ARCH=arm
-export CROSS_COMPILE=arm-linux-gnueabi-
+git config user.email "john@doe.xyz"; git config user.name "John Doe"
+
+# Apply `EHCI timed out on TD` patch from https://forum.doozan.com/read.php\?3,35295
+git am < /scripts/v2020.04-usbtimeoutfix.patch
+# Apply DNS-320 support patch from https://github.com/avoidik/board_dns320
+git am < /scripts/v2020.04-dns320.patch
+
+export ARCH=arm CROSS_COMPILE=arm-linux-gnueabi-
 make distclean
 make dns320_config
 # make menuconfig
+
 make u-boot.kwb
-cp u-boot.kwb /dist
 
 # make cross_tools
 
-# Boot images > FIT + verbose message on fail + Set up board-specific details in device tree before boot
-# CLI > Filesystem > ext4
-# Partition > GPT
-# Library routines -> Enable the FDT library for SPL
-# Library routines -> Enable the FDT library for TPL
-
-
-# CONFIG_OF_BOARD_SETUP : needs dev
+cp u-boot.kwb /dist

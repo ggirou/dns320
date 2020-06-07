@@ -5,20 +5,17 @@ services:
     volumes:
       - "./scripts:/scripts"
       - "./dist:/dist"
-    # command: ["./deboot.sh", "armel", "squeeze", "http://archive.debian.org/debian/"]
-    # command: ["./deboot.sh", "armel", "wheezy", "http://archive.debian.org/debian/"]
-    # command: ["./deboot.sh", "armel", "jessie", "http://ftp.debian.org/debian/"]
-    # command: ["./deboot.sh", "armel", "stretch", "http://ftp.debian.org/debian/"]
-    command: ["./deboot.sh", "armel", "buster", "http://ftp.fr.debian.org/debian/"]
+    # command: ["/scripts/deboot.sh", "armel", "squeeze", "http://archive.debian.org/debian/"]
+    # command: ["/scripts/deboot.sh", "armel", "wheezy", "http://archive.debian.org/debian/"]
+    # command: ["/scripts/deboot.sh", "armel", "jessie", "http://ftp.debian.org/debian/"]
+    # command: ["/scripts/deboot.sh", "armel", "stretch", "http://ftp.debian.org/debian/"]
+    command: ["/scripts/deboot.sh", "armel", "buster", "http://ftp.fr.debian.org/debian/"]
   uboot:
-    build:
-      context: .
-      dockerfile: Dockerfile-uboot
+    build: .
     command: ["/scripts/build_uboot.sh"]
     volumes:
       - "./scripts:/scripts"
-      - "./dist/uboot:/dist"
-      - "./u-boot:/uboot"
+      - "./dist:/dist"
   tftp:
     image: pghalliday/tftp
     ports:
@@ -26,4 +23,4 @@ services:
     volumes:
       - "./scripts:/scripts"
       # - "./dist/boot:/srv/tftp"
-      - "./dist/boot:/var/tftpboot"
+      - "./dist:/var/tftpboot"
