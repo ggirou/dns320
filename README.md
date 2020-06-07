@@ -103,6 +103,8 @@ First, keep current u-boot parameters:
 
 > Keep the content of `printenv` [output](infos/printenv.txt). This will be a useful reference if you want to restore any u-boot parameters.
 
+> Hint: press `ctrl + a` then type `:quit` to quit.
+
 # Test new U-Boot with Serial port
 
 > **NB:** Newer stock versions of u-boot cannot boot the original D-link kernels!
@@ -125,6 +127,8 @@ Try to boot with following commands :
 
 > New default boot commands try to load `uEnv.txt` from USB FAT partition, just change `loadbootenv` to load from ext2.  
 > The `mtdparts` option had became `cmdlinepart.mtdparts` (in Debian-land, at least). [StackExchange](https://unix.stackexchange.com/q/554266)
+
+> Hint: press `ctrl + \` then type `c` to quit.
 
 ## `uEnv.txt` configuration
 

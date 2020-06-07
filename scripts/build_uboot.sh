@@ -13,10 +13,11 @@ fi
 
 git config user.email "john@doe.xyz"; git config user.name "John Doe"
 
+# git checkout v2020.04; git merge --squash v2020.04-dns320; git format-patch HEAD~1
 # Apply `EHCI timed out on TD` patch from https://forum.doozan.com/read.php\?3,35295
-git am < /scripts/v2020.04-usbtimeoutfix.patch
+git am --committer-date-is-author-date < /scripts/v2020.04-usbtimeoutfix.patch
 # Apply DNS-320 support patch from https://github.com/avoidik/board_dns320
-git am < /scripts/v2020.04-dns320.patch
+git am --committer-date-is-author-date < /scripts/v2020.04-dns320.patch
 
 export ARCH=arm CROSS_COMPILE=arm-linux-gnueabi-
 make distclean
