@@ -25,20 +25,21 @@ jobs:
     - name: Build docker image
       run: docker-compose build
 
-    # - name: Debootstrap Debian using docker
-    #   run: |
-    #     modprobe binfmt_misc
-    #     docker-compose run deboot
+    - name: Debootstrap Debian using docker
+      run: |
+        docker run --rm --privileged multiarch/qemu-user-static:register
+        # modprobe binfmt_misc
+        docker-compose run deboot
 
     - name: Build u-boot using docker
       run: |
         docker-compose run uboot
 
-    - name: Upload buster-armel.tar.gz
+    - name: Upload buster-armel.tar
       uses: actions/upload-artifact@v2
       with:
-        name: buster-armel.tar.gz
-        path: ./dist/buster-armel.tar.gz
+        name: buster-armel.tar
+        path: ./dist/buster-armel.tar
 
     - name: Upload buster-armel.final.tar.gz
       uses: actions/upload-artifact@v2

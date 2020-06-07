@@ -1,6 +1,10 @@
 services:
   - docker
 
+before_script:
+- docker run --rm --privileged multiarch/qemu-user-static:register
+
 script:
+- docker-compose build
 - docker-compose run deboot
-- docker-compose run u-boot
+- docker-compose run uboot
