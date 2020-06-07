@@ -2,6 +2,7 @@ version: '3'
 services:
   deboot:
     build: .
+    privileged: true
     volumes:
       - "./scripts:/scripts"
       - "./dist:/dist"

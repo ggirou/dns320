@@ -11,7 +11,7 @@ mkdir -p /chroot
 
 [ -f /dist/$suite-$arch.tar ] \
   && tar xf /dist/$suite-$arch.tar -C /chroot \
-  || (debootstrap --arch=$arch --include=$include $suite /chroot $mirror \
+  || (qemu-debootstrap --arch=$arch --include=$include $suite /chroot $mirror \
       && tar cf /dist/$suite-$arch.tar -C /chroot/ .)
 
 ls -la /chroot
@@ -127,7 +127,8 @@ sd_mod
 usb_storage
 EOF
 
-chroot /chroot bash -ex <<'EOF'
+cp /usr/bin/qemu-arm-static /chroot/usr/bin
+chroot /chroot qemu-arm-static /bin/bash -ex <<'EOF'
 useradd -m -s /bin/bash -G sudo dlink
 echo 'dlink:dns320' | chpasswd
 
@@ -149,6 +150,7 @@ rm dns-nas-utils.deb
 apt-get clean
 rm /tmp/* /var/tmp/* /var/lib/apt/lists/*   /var/cache/debconf/* /var/log/*.log || true
 EOF
+rm /chroot/usr/bin/qemu-arm-static
 
 tar czf /dist/$suite-$arch.final.tar.gz -C /chroot/ .
 cp /chroot/boot/uImage-* /dist/uImage
