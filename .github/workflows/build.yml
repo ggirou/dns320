@@ -35,11 +35,11 @@ jobs:
       run: |
         docker-compose run uboot
 
-    - name: Upload buster-armel.tar
-      uses: actions/upload-artifact@v2
-      with:
-        name: buster-armel.tar
-        path: ./dist/buster-armel.tar
+    # - name: Upload buster-armel.tar
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: buster-armel.tar
+    #     path: ./dist/buster-armel.tar
 
     - name: Upload buster-armel.final.tar.gz
       uses: actions/upload-artifact@v2
