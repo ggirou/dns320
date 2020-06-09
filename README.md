@@ -45,11 +45,11 @@ If you want to:
 
 ## Format to ext2
     
-    # Optionnal, recreate MBR partition
+    # Recreate MBR partition
     sudo apt-get install mbr
     sudo install-mbr /dev/sda
 
-    # Create and formate axt2 partition
+    # Create and formate ext2 partition
     # echo ";" | sudo sfdisk /dev/sda
     sudo parted -l
     sudo parted /dev/sda rm 1
@@ -72,9 +72,9 @@ If you want to:
     ls -la /mnt/usb/
     sudo umount /mnt/usb/
 
-> Only boot files (FIXME Not working...):
+> Only boot files:
 >
->     sudo tar xzf ~/buster-armel.final.tar.gz -C /mnt/usb/ boot
+>     sudo tar xzf ~/buster-armel.final.tar.gz -C /mnt/usb/ ./boot
 
 -----------------------------------------------------------------------
 
@@ -189,7 +189,9 @@ Boot debian, then run:
 
 Reboot and u-boot should load uImage from UBIFS partition.
 
-# Load Images With U-Boot Via TFTP
+# Load with TFTP
+
+## Load uImage and boot
 
 Source: https://docs.khadas.com/vim3/LoadImagesWithUBootViaTFTP.html
 
@@ -197,3 +199,14 @@ Source: https://docs.khadas.com/vim3/LoadImagesWithUBootViaTFTP.html
     setenv serverip 192.168.1.2
     tftp 0x0a00000 uImage
     bootm 0x0a00000
+
+## Load u-boot.kwb anf flash
+
+Source: https://docs.khadas.com/vim3/LoadImagesWithUBootViaTFTP.html
+
+    setenv ipaddr 192.168.1.1
+    setenv serverip 192.168.1.2
+    tftp 0x1000000 u-boot.kwb
+    nand erase 0x000000 0xe0000
+    nand write 0x1000000 0x000000 0xe0000
+    reset
