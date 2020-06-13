@@ -16,3 +16,5 @@ mtd5: 00500000 00020000 "config"
 [   17.682470] 0x000000b00000-0x000007100000 : "image"
 [   17.698547] 0x000007100000-0x000007b00000 : "mini firmware"
 [   17.710590] 0x000007b00000-0x000008000000 : "config"
+
+orion_nand:1M(u-boot),5M(uImage),5M(ramdisk),102M(image),10M(mini_firmware),-(config)

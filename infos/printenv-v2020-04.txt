@@ -9,7 +9,7 @@ fdtcontroladdr=7b47cd0
 importbootenv=echo Importing environment ...; env import -t ${loadaddr} ${filesize}
 loadaddr=0x800000
 loadbootenv=fatload usb 0 ${loadaddr} ${bootenv}
-mtdparts=mtdparts=orion_nand:1M(u-boot),5M(uImage),5M(ramdisk),102M(image),10M(mini_firmware),-(config)optargs=
+mtdparts=mtdparts=orion_nand:896k(u-boot),128k(u-boot-env),-(rootfs)
 nandloadimage=nand read ${loadaddr} kernel
 nandroot=ubi0:rootfs ubi.mtd=rootfs
 nandrootfstype=ubifs
