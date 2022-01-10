@@ -210,3 +210,14 @@ Source: https://docs.khadas.com/vim3/LoadImagesWithUBootViaTFTP.html
     nand erase 0x000000 0xe0000
     nand write 0x1000000 0x000000 0xe0000
     reset
+
+# Swap file
+
+If your memory is full, create a swap file (https://linuxize.com/post/create-a-linux-swap-file/).
+Run in your running debian:
+
+    sudo dd if=/dev/zero of=/swapfile bs=1024 count=131072
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile
+    sudo swapon /swapfile
+    echo '/swapfile swap swap defaults 0 0' | sudo tee -a /etc/fstab
