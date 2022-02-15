@@ -10,7 +10,8 @@ services:
     # command: ["/scripts/deboot.sh", "armel", "wheezy", "http://archive.debian.org/debian/"]
     # command: ["/scripts/deboot.sh", "armel", "jessie", "http://ftp.debian.org/debian/"]
     # command: ["/scripts/deboot.sh", "armel", "stretch", "http://ftp.debian.org/debian/"]
-    command: ["/scripts/deboot.sh", "armel", "buster", "http://ftp.fr.debian.org/debian/"]
+    # command: ["/scripts/deboot.sh", "armel", "buster", "http://ftp.fr.debian.org/debian/"]
+    command: ["/scripts/deboot.sh", "armel", "bullseye", "http://ftp.fr.debian.org/debian/"]
   uboot:
     build: .
     command: ["/scripts/build_uboot.sh"]
