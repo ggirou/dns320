@@ -51,8 +51,8 @@ jobs:
     - name: Upload buster-armel.final.tar.gz
       uses: actions/upload-artifact@v2
       with:
-        name: buster-armel.final.tar.gz
-        path: ./dist/buster-armel.final.tar.gz
+        #name: buster-armel.final.tar.gz
+        path: ./dist/*-armel.final.tar.gz
 
     - name: Upload uImage
       uses: actions/upload-artifact@v2
