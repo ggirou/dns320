@@ -1,21 +1,22 @@
-From 4bca339ba98de6844b4e970e2839848e7d5e36d0 Mon Sep 17 00:00:00 2001
+From 42c68f13ba05d8ba39fcd7e25ad4d8677e715601 Mon Sep 17 00:00:00 2001
 From: John Doe <john@doe.xyz>
 Date: Wed, 16 Feb 2022 14:27:50 +0000
 Subject: [PATCH] Squashed commit of the following:
 
 ---
- arch/arm/dts/Makefile            |   1 +
- arch/arm/dts/kirkwood-dns320.dts |  59 ++++++++++
- arch/arm/mach-kirkwood/Kconfig   |   4 +
- board/d-link/dns320/Kconfig      |  12 ++
- board/d-link/dns320/MAINTAINERS  |   6 +
- board/d-link/dns320/Makefile     |  11 ++
- board/d-link/dns320/dns320.c     | 135 ++++++++++++++++++++++
- board/d-link/dns320/dns320.h     |  31 +++++
- board/d-link/dns320/kwbimage.cfg | 190 +++++++++++++++++++++++++++++++
- configs/dns320_defconfig         |  56 +++++++++
- include/configs/dns320.h         |  88 ++++++++++++++
- 11 files changed, 593 insertions(+)
+ arch/arm/dts/Makefile                         |   1 +
+ arch/arm/dts/kirkwood-dns320.dts              |  59 ++++++
+ arch/arm/mach-kirkwood/Kconfig                |   4 +
+ .../mach-kirkwood/include/mach/kw88f6281.h    |   2 +
+ board/d-link/dns320/Kconfig                   |  12 ++
+ board/d-link/dns320/MAINTAINERS               |   6 +
+ board/d-link/dns320/Makefile                  |  11 +
+ board/d-link/dns320/dns320.c                  | 135 +++++++++++++
+ board/d-link/dns320/dns320.h                  |  31 +++
+ board/d-link/dns320/kwbimage.cfg              | 190 ++++++++++++++++++
+ configs/dns320_defconfig                      |  56 ++++++
+ include/configs/dns320.h                      |  88 ++++++++
+ 12 files changed, 595 insertions(+)
  create mode 100644 arch/arm/dts/kirkwood-dns320.dts
  create mode 100644 board/d-link/dns320/Kconfig
  create mode 100644 board/d-link/dns320/MAINTAINERS
@@ -125,6 +126,19 @@ index cb4e9f29ef..b34de59e8a 100644
  source "board/d-link/dns325/Kconfig"
  source "board/iomega/iconnect/Kconfig"
  source "board/keymile/Kconfig"
+diff --git a/arch/arm/mach-kirkwood/include/mach/kw88f6281.h b/arch/arm/mach-kirkwood/include/mach/kw88f6281.h
+index 87406081cf..33e7414207 100644
+--- a/arch/arm/mach-kirkwood/include/mach/kw88f6281.h
++++ b/arch/arm/mach-kirkwood/include/mach/kw88f6281.h
+@@ -15,6 +15,8 @@
+ #define KW_REGS_PHY_BASE		KW88F6281_REGS_PHYS_BASE
+ 
+ /* TCLK Core Clock definition */
++#ifndef CONFIG_SYS_TCLK
+ #define CONFIG_SYS_TCLK	200000000 /* 200MHz */
++#endif
+ 
+ #endif /* _ASM_ARCH_KW88F6281_H */
 diff --git a/board/d-link/dns320/Kconfig b/board/d-link/dns320/Kconfig
 new file mode 100644
 index 0000000000..db9f057dbd

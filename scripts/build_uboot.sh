@@ -1,6 +1,7 @@
 #!/bin/sh -ex
 
-version=v2022.01
+#version=v2022.01
+version=v2020.04
 dir=/dist/u-boot
 
 if [ ! -d $dir ]; then
@@ -8,6 +9,7 @@ if [ ! -d $dir ]; then
   cd $dir
 else
   cd $dir
+  git fetch
   git reset --hard tags/$version
 fi
 
