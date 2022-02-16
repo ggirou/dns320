@@ -278,17 +278,17 @@ index e6355263cb..c0ec92921b 100644
  	if (!(QT_TOKEN_GET_STATUS(qhtoken) & QT_TOKEN_STATUS_ACTIVE)) {
  		debug("TOKEN=%#x\n", qhtoken);
 +		if (qhtoken & QT_TOKEN_STATUS_XACTERR) {
-+	   	   if (--trynum >= 0) {	/* It is necessary to do this, otherwise the disk is clagged. */
-+	   	      debug("reset the TD and redo, because of XACTERR\n");
-+	   	      qhtoken &= ~QT_TOKEN_STATUS_HALTED;
-+	   	      qhtoken |= QT_TOKEN_STATUS_ACTIVE | QT_TOKEN_CERR(2);
-+	   	      vtd->qt_token = qhtoken; // cpu_to_hc32(qhtoken);
-+	   	      qh->qh_overlay.qt_token = qhtoken; //cpu_to_hc32(qhtoken);
-+	   	      goto retry_xacterr;
-+	   	   }
-+	   	   dev->status = USB_ST_XACTERR;
-+		   dev->act_len = length - QT_TOKEN_GET_TOTALBYTES(qhtoken);
-+		   goto fail;
++			if (--trynum >= 0) {	/* It is necessary to do this, otherwise the disk is clagged. */
++				debug("reset the TD and redo, because of XACTERR\n");
++				qhtoken &= ~QT_TOKEN_STATUS_HALTED;
++				qhtoken |= QT_TOKEN_STATUS_ACTIVE | QT_TOKEN_CERR(2);
++				vtd->qt_token = qhtoken; // cpu_to_hc32(qhtoken);
++				qh->qh_overlay.qt_token = qhtoken; //cpu_to_hc32(qhtoken);
++				goto retry_xacterr;
++			}
++			dev->status = USB_ST_XACTERR;
++			dev->act_len = length - QT_TOKEN_GET_TOTALBYTES(qhtoken);
++			goto fail;
 +		}
 +
  		switch (QT_TOKEN_GET_STATUS(qhtoken) &
