@@ -1,7 +1,7 @@
-From 13bf100320d71cadbc6337bb18809415903a4f04 Mon Sep 17 00:00:00 2001
+From 4bca339ba98de6844b4e970e2839848e7d5e36d0 Mon Sep 17 00:00:00 2001
 From: John Doe <john@doe.xyz>
-Date: Wed, 16 Feb 2022 13:21:26 +0000
-Subject: [PATCH] v2022.01-dns320
+Date: Wed, 16 Feb 2022 14:27:50 +0000
+Subject: [PATCH] Squashed commit of the following:
 
 ---
  arch/arm/dts/Makefile            |   1 +
@@ -10,12 +10,12 @@ Subject: [PATCH] v2022.01-dns320
  board/d-link/dns320/Kconfig      |  12 ++
  board/d-link/dns320/MAINTAINERS  |   6 +
  board/d-link/dns320/Makefile     |  11 ++
- board/d-link/dns320/dns320.c     | 132 +++++++++++++++++++++
+ board/d-link/dns320/dns320.c     | 135 ++++++++++++++++++++++
  board/d-link/dns320/dns320.h     |  31 +++++
  board/d-link/dns320/kwbimage.cfg | 190 +++++++++++++++++++++++++++++++
- configs/dns320_defconfig         |  55 +++++++++
- include/configs/dns320.h         | 111 ++++++++++++++++++
- 11 files changed, 612 insertions(+)
+ configs/dns320_defconfig         |  56 +++++++++
+ include/configs/dns320.h         |  88 ++++++++++++++
+ 11 files changed, 593 insertions(+)
  create mode 100644 arch/arm/dts/kirkwood-dns320.dts
  create mode 100644 board/d-link/dns320/Kconfig
  create mode 100644 board/d-link/dns320/MAINTAINERS
@@ -174,10 +174,10 @@ index 0000000000..1fc01b058e
 +obj-y	:= dns320.o
 diff --git a/board/d-link/dns320/dns320.c b/board/d-link/dns320/dns320.c
 new file mode 100644
-index 0000000000..e494f0b65f
+index 0000000000..bafa2bf135
 --- /dev/null
 +++ b/board/d-link/dns320/dns320.c
-@@ -0,0 +1,132 @@
+@@ -0,0 +1,135 @@
 +// SPDX-License-Identifier: GPL-2.0+
 +/*
 + * Copyright (C) 2011
@@ -190,6 +190,8 @@ index 0000000000..e494f0b65f
 + */
 +
 +#include <common.h>
++#include <init.h>
++#include <log.h>
 +#include <miiphy.h>
 +#include <net.h>
 +#include <netdev.h>
@@ -197,6 +199,7 @@ index 0000000000..e494f0b65f
 +#include <asm/arch/soc.h>
 +#include <asm/arch/mpp.h>
 +#include <asm/arch/gpio.h>
++#include <asm/global_data.h>
 +#include "dns320.h"
 +
 +DECLARE_GLOBAL_DATA_PTR;
@@ -545,21 +548,24 @@ index 0000000000..58ad6624b3
 +DATA 0x0 0x0
 diff --git a/configs/dns320_defconfig b/configs/dns320_defconfig
 new file mode 100644
-index 0000000000..588986f55d
+index 0000000000..5350418921
 --- /dev/null
 +++ b/configs/dns320_defconfig
-@@ -0,0 +1,55 @@
+@@ -0,0 +1,56 @@
 +CONFIG_ARM=y
++CONFIG_SKIP_LOWLEVEL_INIT=y
 +CONFIG_SYS_DCACHE_OFF=y
 +CONFIG_ARCH_CPU_INIT=y
-+CONFIG_KIRKWOOD=y
++CONFIG_ARCH_KIRKWOOD=y
 +CONFIG_SYS_TEXT_BASE=0x600000
++CONFIG_NR_DRAM_BANKS=1
 +CONFIG_TARGET_DNS320=y
 +CONFIG_ENV_SIZE=0x20000
 +CONFIG_ENV_OFFSET=0xE0000
-+CONFIG_NR_DRAM_BANKS=2
++CONFIG_DEFAULT_DEVICE_TREE="kirkwood-dns320"
 +CONFIG_IDENT_STRING="\nD-Link DNS-320"
 +# CONFIG_SYS_MALLOC_F is not set
++CONFIG_SYS_LOAD_ADDR=0x800000
 +CONFIG_BOOTDELAY=3
 +CONFIG_FIT=y
 +CONFIG_FIT_VERBOSE=y
@@ -587,11 +593,10 @@ index 0000000000..588986f55d
 +CONFIG_ISO_PARTITION=y
 +CONFIG_EFI_PARTITION=y
 +CONFIG_OF_CONTROL=y
-+CONFIG_DEFAULT_DEVICE_TREE="kirkwood-dns320"
++CONFIG_ENV_OVERWRITE=y
 +CONFIG_ENV_IS_IN_NAND=y
++CONFIG_NETCONSOLE=y
 +CONFIG_DM=y
-+CONFIG_MVSATA_IDE=y
-+CONFIG_BLK=y
 +# CONFIG_MMC is not set
 +CONFIG_MTD=y
 +CONFIG_MTD_RAW_NAND=y
@@ -601,15 +606,14 @@ index 0000000000..588986f55d
 +CONFIG_RTC_MV=y
 +CONFIG_SYS_NS16550=y
 +CONFIG_USB=y
-+CONFIG_DM_USB=y
 +CONFIG_USB_EHCI_HCD=y
 +CONFIG_USB_STORAGE=y
 diff --git a/include/configs/dns320.h b/include/configs/dns320.h
 new file mode 100644
-index 0000000000..78b1e719fd
+index 0000000000..b19952b37d
 --- /dev/null
 +++ b/include/configs/dns320.h
-@@ -0,0 +1,111 @@
+@@ -0,0 +1,88 @@
 +/* SPDX-License-Identifier: GPL-2.0+ */
 +/*
 + * Copyright (C) 2011
@@ -625,26 +629,12 @@ index 0000000000..78b1e719fd
 +#define _CONFIG_DNS320_H
 +
 +/*
-+ * Machine number definition
-+ */
-+#define CONFIG_MACH_TYPE		MACH_TYPE_DNS320
-+
-+/*
 + * High Level Configuration Options (easy to change)
 + */
 +#define CONFIG_FEROCEON_88FR131		/* CPU Core subversion */
 +#define CONFIG_KW88F6281		/* SOC Name */
-+#define CONFIG_SKIP_LOWLEVEL_INIT	/* disable board lowlevel_init */
 +#define CONFIG_SYS_TCLK			166666667	/* 800Mhz */
 +
-+/*
-+ * Commands configuration
-+ */
-+
-+/*
-+ * mv-common.h should be defined after CMD configs since it used them
-+ * to enable certain macros
-+ */
 +#include "mv-common.h"
 +
 +/* Remove or override few declarations from mv-common.h */
@@ -654,15 +644,6 @@ index 0000000000..78b1e719fd
 + */
 +#ifdef CONFIG_CMD_NET
 +#define CONFIG_MVGBE_PORTS		{1, 0} /* enable port 0 only */
-+#define CONFIG_NETCONSOLE
-+#endif
-+
-+/*
-+ * SATA Driver configuration
-+ */
-+#ifdef CONFIG_MVSATA_IDE
-+#define CONFIG_SYS_ATA_IDE0_OFFSET      MV_SATA_PORT0_OFFSET
-+#define CONFIG_SYS_ATA_IDE1_OFFSET      MV_SATA_PORT1_OFFSET
 +#endif
 +
 +/*
