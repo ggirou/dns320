@@ -2,6 +2,9 @@
 
 name: CI
 
+env:
+  DEBIAN_VERSION: bullseye
+
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
@@ -51,8 +54,8 @@ jobs:
     - name: Upload buster-armel.final.tar.gz
       uses: actions/upload-artifact@v2
       with:
-        name: debian-armel.final.tar.gz
-        path: ./dist/*-armel.final.tar.gz
+        name: $DEBIAN_VERSION-armel.final.tar.gz
+        path: ./dist/$DEBIAN_VERSION-armel.final.tar.gz
 
     - name: Upload uImage
       uses: actions/upload-artifact@v2
