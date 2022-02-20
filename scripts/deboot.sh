@@ -18,6 +18,7 @@ packages=(
   device-tree-compiler # Device Tree Compiler for Flat Device Trees
 
   # Admin
+  cron # process scheduling daemon
   dbus-user-session # simple interprocess messaging system (systemd --user integration)
   hdparm # tune hard disk parameters for high performance
   mtd-utils # Memory Technology Device Utilities
@@ -50,6 +51,9 @@ packages=(
 
   # Python
   python3-minimal # minimal subset of the Python language (default python3 version)
+
+  # Shells
+  bash-completion # programmable completion for the bash shell
 
   # Utils
   acl # access control list - utilities
@@ -97,8 +101,8 @@ EOF
 cat <<'EOF' > /chroot/etc/fstab
 /dev/root   /       auto    noatime                 0 0
 tmpfs       /tmp    tmpfs   nodev,nosuid,size=32M   0 0
-/dev/disk/by-path/platform-f1080000.sata-ata-1-part2   /mnt/HD/HD_a2/  ext3    rw,relatime     0 0
-/dev/disk/by-path/platform-f1080000.sata-ata-2-part2   /mnt/HD/HD_b2/  ext3    rw,relatime     0 0
+/dev/disk/by-path/platform-f1080000.sata-ata-1-part2   /mnt/HD/HD_a2/  ext3    nofail,auto,defaults,relatime     0 0
+/dev/disk/by-path/platform-f1080000.sata-ata-2-part2   /mnt/HD/HD_b2/  ext3    nofail,auto,defaults,relatime     0 0
 EOF
 
 # HDD Hibernate
@@ -165,7 +169,7 @@ bootenvrootfstype=ext2
 ubifsloadimage=ubi part rootfs && ubifsmount ubi:rootfs && ubifsload ${loadaddr} /uImage || ubifsload ${loadaddr} /uImage.old
 # Because of flaky USB, load uImage in two parts with some delays
 usbloadimage=sleep 5 && ext4load usb 0:1 0xa00000 /boot/uImage 0xa00000 && sleep 10 && ext4load usb 0:1 0x1400000 /boot/uImage 0 0xa00000 && setenv loadaddr 0xa00000
-bootenvcmd=run setbootargs; run ubifsloadimage || run usbloadimage; bootm ${loadaddr}
+bootenvcmd=run setbootargs; run usbloadimage || run ubifsloadimage; bootm ${loadaddr}
 EOF
 
 # All these modules will be stored in the initramfs and always loaded
