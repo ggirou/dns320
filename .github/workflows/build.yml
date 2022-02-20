@@ -51,11 +51,11 @@ jobs:
     #     name: buster-armel.tar
     #     path: ./dist/buster-armel.tar
 
-    - name: Upload buster-armel.final.tar.gz
+    - name: Upload ${{ env.DEBIAN_VERSION }}-armel.final.tar.gz
       uses: actions/upload-artifact@v2
       with:
-        name: $DEBIAN_VERSION-armel.final.tar.gz
-        path: ./dist/$DEBIAN_VERSION-armel.final.tar.gz
+        name: ${{ env.DEBIAN_VERSION }}-armel.final.tar.gz
+        path: ./dist/${{ env.DEBIAN_VERSION }}-armel.final.tar.gz
 
     - name: Upload uImage
       uses: actions/upload-artifact@v2
