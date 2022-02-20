@@ -163,7 +163,7 @@ EOF
 chmod a+x /chroot/etc/kernel/postinst.d/zz-local-build-image
 
 cat <<'EOF' > /chroot/uEnv.txt
-optargs=initramfs.runsize=32M usb-storage.delay_use=0 rootdelay=1
+optargs=initramfs.runsize=32M usb-storage.delay_use=0 rootdelay=1 usbcore.autosuspend=-1
 bootenvroot=/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part1 rw
 bootenvrootfstype=ext2
 ubifsloadimage=ubi part rootfs && ubifsmount ubi:rootfs && ubifsload ${loadaddr} /uImage || ubifsload ${loadaddr} /uImage.old
