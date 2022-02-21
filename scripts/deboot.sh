@@ -108,10 +108,11 @@ iface eth0 inet dhcp
 EOF
 
 cat <<'EOF' > /chroot/etc/fstab
-/dev/root   /       auto    noatime                 0 0
+# <file system>                           <mount point>         <type>  <options>          <dump>  <pass>
+/dev/root   /       auto    noatime                 0 1
 tmpfs       /tmp    tmpfs   nodev,nosuid,size=32M   0 0
-/dev/disk/by-path/platform-f1080000.sata-ata-1-part2   /mnt/HD/HD_a2/  ext3    nofail,auto,defaults,relatime     0 0
-/dev/disk/by-path/platform-f1080000.sata-ata-2-part2   /mnt/HD/HD_b2/  ext3    nofail,auto,defaults,relatime     0 0
+/dev/disk/by-path/platform-f1080000.sata-ata-1-part2   /mnt/HD/HD_a2/  ext3    nofail,auto,defaults,relatime     0 2
+/dev/disk/by-path/platform-f1080000.sata-ata-2-part2   /mnt/HD/HD_b2/  ext3    nofail,auto,defaults,relatime     0 2
 EOF
 
 # HDD Hibernate
