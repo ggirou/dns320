@@ -12,23 +12,24 @@ hostname=DNS-320
 # --variant=minbase
 # dpkg-query -f '${binary:Package} ${Priority}\n' -W | grep -w 'required\|important'
 
+# * Mandatory
 packages=(
   # Kernel / DNS-320
-  linux-image-marvell # Linux for Marvell Kirkwood/Orion (meta-package)
-  device-tree-compiler # Device Tree Compiler for Flat Device Trees
+  linux-image-marvell # * Linux for Marvell Kirkwood/Orion (meta-package)
+  device-tree-compiler # * Device Tree Compiler for Flat Device Trees
 
   # Admin
   cron # process scheduling daemon
-  dbus-user-session # simple interprocess messaging system (systemd --user integration)
-  hdparm # tune hard disk parameters for high performance
-  mtd-utils # Memory Technology Device Utilities
+  dbus-user-session # * simple interprocess messaging system (systemd --user integration)
+  hdparm # * tune hard disk parameters for high performance
+  mtd-utils # * Memory Technology Device Utilities
   procps # /proc file system utilities
-  u-boot-tools # companion tools for Das U-Boot bootloader
+  u-boot-tools # * companion tools for Das U-Boot bootloader
   udev # /dev/ and hotplug management daemon
 
   # Localization
-  locales # GNU C Library: National Language (locale) data [support]
-  tzdata # time zone and daylight-saving time data
+  locales # * GNU C Library: National Language (locale) data [support]
+  tzdata # * time zone and daylight-saving time data
 
   # Misc
   ca-certificates # Common CA certificates
