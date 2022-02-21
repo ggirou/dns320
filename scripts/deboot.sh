@@ -238,6 +238,9 @@ wget https://github.com/ggirou/dns-nas-utils/releases/download/v1.5-1/dns-nas-ut
 dpkg -i dns-nas-utils.deb
 rm dns-nas-utils.deb
 
+# Avoid "lockd: cannot monitor" with NFS  https://bugs.launchpad.net/ubuntu/+source/nfs-utils/+bug/1689777
+systemctl enable rpc-statd
+
 apt-get clean
 rm /tmp/* /var/tmp/* /var/lib/apt/lists/*   /var/cache/debconf/* /var/log/*.log || true
 EOF
