@@ -22,6 +22,8 @@ packages=(
   cron # process scheduling daemon
   dbus-user-session # * simple interprocess messaging system (systemd --user integration)
   hdparm # * tune hard disk parameters for high performance
+  htop # interactive processes viewer
+  iotop # simple top-like I/O monitor
   mtd-utils # * Memory Technology Device Utilities
   procps # /proc file system utilities
   u-boot-tools # * companion tools for Das U-Boot bootloader
@@ -58,9 +60,11 @@ packages=(
 
   # Utils
   acl # access control list - utilities
+  busybox # Tiny utilities for small and embedded systems
   console-data # keymaps, fonts, charset maps, fallback tables for 'kbd'.
   curl # command line tool for transferring data with URL syntax
   dialog # Displays user-friendly dialog boxes from shell scripts
+  fdisk # collection of partitioning utilities
   gnupg # GNU privacy guard - a free PGP replacement
   nano # small, friendly text editor inspired by Pico
   sudo # Provide limited super user privileges to specific users
