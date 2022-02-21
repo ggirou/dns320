@@ -116,6 +116,12 @@ EOF
 
 # HDD Hibernate
 cat <<'EOF' >> /chroot/etc/hdparm.conf
+# Not tested, is it useful?
+# Disable Power Management for disk on usb
+# /dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0 {
+#   apm = 255
+# }
+
 /dev/disk/by-path/platform-f1080000.sata-ata-1 {
     # Hibernate after 5min (5s * 60)
     spindown_time = 60
@@ -176,8 +182,7 @@ optargs=initramfs.runsize=32M usb-storage.delay_use=0 rootdelay=1 usbcore.autosu
 bootenvroot=/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part1 rw
 bootenvrootfstype=ext2
 ubifsloadimage=ubi part rootfs && ubifsmount ubi:rootfs && ubifsload ${loadaddr} /uImage || ubifsload ${loadaddr} /uImage.old
-# Because of flaky USB, load uImage in two parts with some delays
-usbloadimage=sleep 5 && ext4load usb 0:1 0xa00000 /boot/uImage 0xa00000 && sleep 10 && ext4load usb 0:1 0x1400000 /boot/uImage 0 0xa00000 && setenv loadaddr 0xa00000
+usbloadimage=ext4load usb 0:1 0xa00000 /boot/uImage && setenv loadaddr 0xa00000
 bootenvcmd=run setbootargs; run usbloadimage || run ubifsloadimage; bootm ${loadaddr}
 EOF
 
