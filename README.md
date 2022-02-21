@@ -221,3 +221,25 @@ Run in your running debian:
     sudo mkswap /swapfile
     sudo swapon /swapfile
     echo '/swapfile swap swap defaults 0 0' | sudo tee -a /etc/fstab
+
+# Monitoring
+
+Kernel logs:
+
+    sudo dmesg
+
+CPU / Memory:
+
+    top
+    # or
+    htop
+
+I/O:
+
+    sudo iotop
+
+NFS:
+
+    sudo showmount -e
+    sudo nfsstat -s
+    sudo nfsstat -o net
