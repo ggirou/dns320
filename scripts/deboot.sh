@@ -92,6 +92,10 @@ fi
 
 ls -la /chroot
 
+# TODO FSCKFIX https://manpages.debian.org/bullseye/initscripts/rcS.5.en.html
+# TODO https://www.xmodulo.com/automatic-filesystem-checks-repair-linux.html
+touch /chroot/forcefsck # Force fsck Upon System Boot
+
 echo $hostname > /chroot/etc/hostname
 echo "127.0.1.1       $hostname" >> /chroot/etc/hosts
 echo LANG=en_US.UTF-8 > /chroot/etc/default/locale
@@ -182,6 +186,11 @@ EOF
 cat <<'EOF' >> /chroot/etc/initramfs-tools/modules
 # If modified, run the following command:
 # dpkg-reconfigure $(dpkg --get-selections | egrep 'linux-image-[0-9]' | cut -f1)
+# For debugging only (doesn't recreate FIT file)
+# update-initramfs -u -v
+# Check content with:
+# lsinitramfs /boot/initrd.img-$(uname -r)
+
 # Thermal management
 gpio-fan
 kirkwood_thermal
@@ -202,6 +211,12 @@ gpio_keys
 sd_mod
 usb_storage
 EOF
+
+# Fix "Warning: fsck not present, so skipping root file system" on boot
+# Because /usr/share/initramfs-tools/hooks/fsck doesn't work as expected, copy fsck executables in initramfs
+# Set explicitely FSTYPE=ext2,ext3,ext4 in /etc/initramfs-tools/initramfs.conf
+# Alternatively but not tested: https://forum.armbian.com/topic/11207-include-fsck-on-a-init-ramdisk-espressobin/#comment-84245
+sed -i s'/^FSTYPE=.*$/FSTYPE=ext2,ext3,ext4/' /chroot/etc/initramfs-tools/initramfs.conf
 
 cp /usr/bin/qemu-arm-static /chroot/usr/bin
 chroot /chroot qemu-arm-static /bin/bash -ex <<'EOF'
