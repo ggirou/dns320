@@ -64,6 +64,11 @@ If you want to:
     sudo badblocks -s -w -t 0 /dev/sda1 > badsectors.txt
     sudo e2fsck -y -l badsectors.txt /dev/sda1
 
+    # Force Regular Filesystem Checks (every 30 mounts or 3 months)
+    # https://www.xmodulo.com/automatic-filesystem-checks-repair-linux.html
+    sudo tune2fs -c 30 -i 3m /dev/sda1
+    sudo tune2fs -l /dev/sda1 | egrep 'Maximum|interval'
+
 ## Extract Debian
 
     sudo mkdir -p /mnt/usb/

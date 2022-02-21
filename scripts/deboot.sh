@@ -93,8 +93,6 @@ fi
 ls -la /chroot
 
 # TODO FSCKFIX https://manpages.debian.org/bullseye/initscripts/rcS.5.en.html
-# TODO https://www.xmodulo.com/automatic-filesystem-checks-repair-linux.html
-touch /chroot/forcefsck # Force fsck Upon System Boot
 
 echo $hostname > /chroot/etc/hostname
 echo "127.0.1.1       $hostname" >> /chroot/etc/hosts
