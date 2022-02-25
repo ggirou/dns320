@@ -92,8 +92,6 @@ fi
 
 ls -la /chroot
 
-# TODO FSCKFIX https://manpages.debian.org/bullseye/initscripts/rcS.5.en.html
-
 echo $hostname > /chroot/etc/hostname
 echo "127.0.1.1       $hostname" >> /chroot/etc/hosts
 echo LANG=en_US.UTF-8 > /chroot/etc/default/locale
@@ -104,12 +102,19 @@ auto eth0
 iface eth0 inet dhcp
 EOF
 
+# Autorepair option for fsck on boot https://manpages.debian.org/bullseye/initscripts/rcS.5.en.html
+# Replaced by? https://manpages.debian.org/bullseye/systemd/systemd-fsck.8.en.html
+# Check logs in /run/initramfs/fsck.log
+echo 'FSCKFIX=yes' > /chroot/etc/default/rcS
+
 cat <<'EOF' > /chroot/etc/fstab
 # <file system>                           <mount point>         <type>  <options>          <dump>  <pass>
 /dev/root   /       auto    noatime                 0 1
 tmpfs       /tmp    tmpfs   nodev,nosuid,size=32M   0 0
-/dev/disk/by-path/platform-f1080000.sata-ata-1-part2   /mnt/HD/HD_a2/  ext3    nofail,auto,defaults,relatime     0 2
-/dev/disk/by-path/platform-f1080000.sata-ata-2-part2   /mnt/HD/HD_b2/  ext3    nofail,auto,defaults,relatime     0 2
+# Uncomment if you have a second partition on your usb disk
+#/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part2   /mnt/ssd/  ext4    nofail,auto,defaults,relatime     0 0
+/dev/disk/by-path/platform-f1080000.sata-ata-1-part2   /mnt/HD/HD_a2/  ext3    nofail,auto,defaults,relatime     0 0
+/dev/disk/by-path/platform-f1080000.sata-ata-2-part2   /mnt/HD/HD_b2/  ext3    nofail,auto,defaults,relatime     0 0
 EOF
 
 # HDD Hibernate
@@ -176,7 +181,10 @@ EOF
 chmod a+x /chroot/etc/kernel/postinst.d/zz-local-build-image
 
 cat <<'EOF' > /chroot/uEnv.txt
-optargs=initramfs.runsize=32M usb-storage.delay_use=0 rootdelay=1 usbcore.autosuspend=-1
+# Kernel command line parameters:
+# https://www.kernel.org/doc/html/v5.10/admin-guide/kernel-parameters.html
+# https://manpages.debian.org/bullseye/systemd/systemd-fsck.8.en.html
+optargs=initramfs.runsize=32M usb-storage.delay_use=0 rootdelay=1 usbcore.autosuspend=-1 fsck.repair=preen
 bootenvroot=/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part1 rw
 bootenvrootfstype=ext2
 ubifsloadimage=ubi part rootfs && ubifsmount ubi:rootfs && ubifsload ${loadaddr} /uImage || ubifsload ${loadaddr} /uImage.old
