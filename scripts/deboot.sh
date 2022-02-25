@@ -98,7 +98,6 @@ echo $hostname > /chroot/etc/hostname
 echo "127.0.1.1       $hostname" >> /chroot/etc/hosts
 echo LANG=en_US.UTF-8 > /chroot/etc/default/locale
 echo en_US.UTF-8 UTF-8 >> /chroot/etc/locale.gen
-echo "Europe/Paris" > /chroot/etc/timezone
 
 cat <<EOF > /chroot/etc/network/interfaces.d/eth0
 auto eth0
@@ -231,6 +230,7 @@ dpkg-reconfigure --frontend=noninteractive locales
 update-locale LANG=en_US.UTF-8
 
 dpkg-reconfigure --frontend=noninteractive tzdata
+timedatectl set-timezone Europe/Paris
 
 # Build u-boot images for already installed kernel
 dpkg-reconfigure $(dpkg --get-selections | egrep 'linux-image-[0-9]' | cut -f1)
