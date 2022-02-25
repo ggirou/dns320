@@ -163,13 +163,13 @@ mkimage -f /boot/fit.its /boot/uImage-${version}
 ln -sf /boot/uImage-${version} /boot/uImage
 
 # Copy uImage to Nand UBIFS partition if exists
-mkdir -p /mnt/ubifs
+mkdir -p /tmp/ubifs
 if [ -c /dev/mtd2 ]; then
   modprobe ubi
   ubiattach /dev/ubi_ctrl -m 2
-  mount -t ubifs /dev/ubi0_0 /mnt/ubifs
-  cp --backup --suffix .old /boot/uImage /mnt/ubifs/
-  umount /mnt/ubifs
+  mount -t ubifs /dev/ubi0_0 /tmp/ubifs
+  cp --backup --suffix .old /boot/uImage /tmp/ubifs/
+  umount /tmp/ubifs
   ubidetach /dev/ubi_ctrl -m 2
 fi
 EOF
