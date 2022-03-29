@@ -238,7 +238,8 @@ dpkg-reconfigure --frontend=noninteractive locales
 update-locale LANG=en_US.UTF-8
 
 dpkg-reconfigure --frontend=noninteractive tzdata
-timedatectl set-timezone Europe/Paris
+#timedatectl set-timezone Europe/Paris
+ln -sf /usr/share/zoneinfo/Europe/Paris /etc/localtime
 
 # Build u-boot images for already installed kernel
 dpkg-reconfigure $(dpkg --get-selections | egrep 'linux-image-[0-9]' | cut -f1)
