@@ -567,12 +567,13 @@ new file mode 100644
 index 0000000000..5350418921
 --- /dev/null
 +++ b/configs/dns320_defconfig
-@@ -0,0 +1,56 @@
+@@ -0,0 +1,72 @@
 +CONFIG_ARM=y
 +CONFIG_SKIP_LOWLEVEL_INIT=y
 +CONFIG_SYS_DCACHE_OFF=y
 +CONFIG_ARCH_CPU_INIT=y
 +CONFIG_ARCH_KIRKWOOD=y
++CONFIG_SYS_KWD_CONFIG="board/d-link/dns320/kwbimage.cfg"
 +CONFIG_SYS_TEXT_BASE=0x600000
 +CONFIG_NR_DRAM_BANKS=1
 +CONFIG_TARGET_DNS320=y
@@ -580,22 +581,30 @@ index 0000000000..5350418921
 +CONFIG_ENV_OFFSET=0xE0000
 +CONFIG_DEFAULT_DEVICE_TREE="kirkwood-dns320"
 +CONFIG_IDENT_STRING="\nD-Link DNS-320"
++CONFIG_SYS_LOAD_ADDR=0x800000
++CONFIG_HAS_CUSTOM_SYS_INIT_SP_ADDR=y
++CONFIG_CUSTOM_SYS_INIT_SP_ADDR=0xc8012000
 +# CONFIG_SYS_MALLOC_F is not set
 +CONFIG_SYS_LOAD_ADDR=0x800000
 +CONFIG_BOOTDELAY=3
++CONFIG_USE_BOOTCOMMAND=y
++CONFIG_BOOTCOMMAND="if test -n ${bootenv} && usb start; then if run loadbootenv; then echo Loaded environment ${bootenv} from usb;run importbootenv;fi;if test -n ${bootenvcmd}; then echo Running bootenvcmd ...;run bootenvcmd;fi;fi;run setnandbootenv subbootcmd;"
 +CONFIG_FIT=y
 +CONFIG_FIT_VERBOSE=y
 +CONFIG_LEGACY_IMAGE_FORMAT=y
 +CONFIG_USE_PREBOOT=y
 +CONFIG_CONSOLE_MUX=y
 +# CONFIG_DISPLAY_BOARDINFO is not set
++CONFIG_RESET_PHY_R=y
 +CONFIG_HUSH_PARSER=y
++CONFIG_SYS_MAXARGS=32
 +# CONFIG_CMD_FLASH is not set
 +CONFIG_CMD_IDE=y
 +CONFIG_CMD_NAND=y
 +CONFIG_CMD_USB=y
 +# CONFIG_CMD_SETEXPR is not set
 +CONFIG_CMD_DHCP=y
++CONFIG_SYS_DISABLE_AUTOLOAD=y
 +CONFIG_CMD_MII=y
 +CONFIG_CMD_PING=y
 +CONFIG_CMD_EXT2=y
@@ -612,7 +621,14 @@ index 0000000000..5350418921
 +CONFIG_ENV_OVERWRITE=y
 +CONFIG_ENV_IS_IN_NAND=y
 +CONFIG_NETCONSOLE=y
++CONFIG_SYS_FAULT_ECHO_LINK_DOWN=y
 +CONFIG_DM=y
++CONFIG_SYS_ATA_STRIDE=4
++CONFIG_SYS_ATA_DATA_OFFSET=0x100
++CONFIG_SYS_ATA_REG_OFFSET=0x100
++CONFIG_SYS_ATA_ALT_OFFSET=0x100
++CONFIG_LBA48=y
++CONFIG_KIRKWOOD_GPIO=y
 +# CONFIG_MMC is not set
 +CONFIG_MTD=y
 +CONFIG_MTD_RAW_NAND=y
@@ -629,7 +645,7 @@ new file mode 100644
 index 0000000000..b19952b37d
 --- /dev/null
 +++ b/include/configs/dns320.h
-@@ -0,0 +1,88 @@
+@@ -0,0 +1,72 @@
 +/* SPDX-License-Identifier: GPL-2.0+ */
 +/*
 + * Copyright (C) 2011
@@ -665,7 +681,6 @@ index 0000000000..b19952b37d
 +/*
 + * Enable GPI0 support
 + */
-+#define CONFIG_KIRKWOOD_GPIO
 +
 +/*
 + * Environment variables configurations
@@ -679,9 +694,7 @@ index 0000000000..b19952b37d
 +	"stdout=serial\0" \
 +	"stderr=serial\0" \
 +	"loadaddr=0x800000\0" \
-+	"autoload=no\0" \
 +	"console=ttyS0,115200\0" \
-+	"mtdparts="CONFIG_MTDPARTS_DEFAULT \
 +	"optargs=\0" \
 +	"bootenv=uEnv.txt\0" \
 +	"importbootenv=echo Importing environment ...; " \
@@ -703,19 +716,6 @@ index 0000000000..b19952b37d
 +		"setenv bootenvroot ${nandroot}; " \
 +		"setenv bootenvrootfstype ${nandrootfstype}; " \
 +		"setenv bootenvloadimage ${nandloadimage}\0"
-+
-+#define CONFIG_BOOTCOMMAND \
-+	"if test -n ${bootenv} && usb start; then " \
-+		"if run loadbootenv; then " \
-+			"echo Loaded environment ${bootenv} from usb;" \
-+			"run importbootenv;" \
-+		"fi;" \
-+		"if test -n ${bootenvcmd}; then " \
-+			"echo Running bootenvcmd ...;" \
-+			"run bootenvcmd;" \
-+		"fi;" \
-+	"fi;" \
-+	"run setnandbootenv subbootcmd;"
 +
 +#endif /* _CONFIG_DNS320_H */
 -- 
