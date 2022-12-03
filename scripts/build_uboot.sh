@@ -1,7 +1,7 @@
 #!/bin/sh -ex
 
 #version=v2020.04
-version=v2022.01
+version=v2022.10
 dir=/dist/u-boot
 
 if [ ! -d $dir ]; then
@@ -26,7 +26,7 @@ git config user.email "john@doe.xyz"; git config user.name "John Doe"
 # git commit -m "$newVersion-$patch"; git format-patch --stdout HEAD~1 > ~/$newVersion-$patch.patch
 
 # Apply `EHCI timed out on TD` patch from https://forum.doozan.com/read.php\?3,35295
-git am --committer-date-is-author-date < /scripts/$version-usbtimeoutfix.patch
+# git am --committer-date-is-author-date < /scripts/$version-usbtimeoutfix.patch
 # Apply DNS-320 support patch from https://github.com/avoidik/board_dns320
 git am --committer-date-is-author-date < /scripts/$version-dns320.patch
 
@@ -35,7 +35,7 @@ make distclean
 make dns320_config
 # make menuconfig
 
-make u-boot.kwb
+make -j`nproc` u-boot.kwb
 
 # make cross_tools
 
