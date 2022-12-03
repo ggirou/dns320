@@ -1,7 +1,7 @@
 #!/bin/sh -ex
 
-#version=v2020.04
-version=v2022.10
+#version=v2022.01
+version=$1
 dir=/dist/u-boot
 
 if [ ! -d $dir ]; then
