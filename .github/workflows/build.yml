@@ -16,7 +16,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  debian:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -31,7 +31,7 @@ jobs:
       with:
         image: tonistiigi/binfmt:latest
         platforms: armel
-          
+
     - name: Build docker image
       run: docker-compose build
 
@@ -41,21 +41,35 @@ jobs:
         # modprobe binfmt_misc
         docker-compose run deboot
 
-    - name: Build u-boot using docker
-      run: |
-        docker-compose run uboot
-
-    # - name: Upload buster-armel.tar
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: buster-armel.tar
-    #     path: ./dist/buster-armel.tar
-
     - name: Upload ${{ env.DEBIAN_VERSION }}-armel.final.tar.gz
       uses: actions/upload-artifact@v2
       with:
         name: ${{ env.DEBIAN_VERSION }}-armel.final.tar.gz
         path: ./dist/${{ env.DEBIAN_VERSION }}-armel.final.tar.gz
+
+  # This workflow contains a single job called "build"
+  uboot:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    - name: Set up QEMU
+      id: qemu
+      uses: docker/setup-qemu-action@v1
+      with:
+        image: tonistiigi/binfmt:latest
+        platforms: armel
+
+    - name: Build docker image
+      run: docker-compose build
+
+    - name: Build u-boot using docker
+      run: |
+        docker-compose run uboot
 
     - name: Upload uImage
       uses: actions/upload-artifact@v2
