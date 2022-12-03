@@ -39,17 +39,17 @@ If you want to:
 > For Debugging/Testing:
 >
 >     docker-compose run deboot bash
->     ./deboot.sh armel buster http://ftp.fr.debian.org/debian/ openssh-server
+>     ./deboot.sh armel bullseye http://ftp.fr.debian.org/debian/ openssh-server
 
 # Get USB key ready
 
-## Format to ext2
+## Format to ext4
     
     # Recreate MBR partition
     sudo apt-get install mbr
     sudo install-mbr /dev/sda
 
-    # Create and formate ext2 partition
+    # Create and formate ext4 partition
     # echo ";" | sudo sfdisk /dev/sda
     sudo parted -l
     sudo parted /dev/sda rm 1
@@ -58,9 +58,12 @@ If you want to:
     #sudo parted -a minimal /dev/sda mkpart primary 0% 100%
     sudo parted /dev/sda set 1 boot on
 
-    sudo mkfs.ext2 /dev/sda1
+    sudo mkfs.ext4 /dev/sda1
 
-    # Optionnal, chek bad blocks and fix it
+    # Optionnal, quick disk check
+    sudo e2fsck /dev/sda1
+
+    # Optionnal, check bad blocks and fix it
     sudo badblocks -s -w -t 0 /dev/sda1 > badsectors.txt
     sudo e2fsck -y -l badsectors.txt /dev/sda1
 
@@ -73,13 +76,13 @@ If you want to:
 
     sudo mkdir -p /mnt/usb/
     sudo mount /dev/sda1 /mnt/usb/
-    sudo tar xzf ~/buster-armel.final.tar.gz -C /mnt/usb/
+    sudo tar xzf ~/bullseye-armel.final.tar.gz -C /mnt/usb/
     ls -la /mnt/usb/
     sudo umount /mnt/usb/
 
 > Only boot files:
 >
->     sudo tar xzf ~/buster-armel.final.tar.gz -C /mnt/usb/ ./boot
+>     sudo tar xzf ~/bullseye-armel.final.tar.gz -C /mnt/usb/ ./boot
 
 -----------------------------------------------------------------------
 
@@ -125,12 +128,12 @@ Try to boot with following commands :
 
     setenv ethaddr 14:D6:4D:AB:A7:12
     setenv setbootargs 'setenv bootargs console=${console} ${optargs} ${mtdparts} cmdlinepart.${mtdparts} root=${bootenvroot} rootfstype=${bootenvrootfstype}'
-    setenv loadbootenv ext2load usb 0:1 ${loadaddr} ${bootenv}
+    setenv loadbootenv 'ext4load usb 0:1 ${loadaddr} ${bootenv}'
     boot
 
 > UBIFS partition is not ready yet, it should fail to load from it (see ubifs setup bellow). It should fallback to USB image load.
 
-> New default boot commands try to load `uEnv.txt` from USB FAT partition, just change `loadbootenv` to load from ext2.  
+> New default boot commands try to load `uEnv.txt` from USB FAT partition, just change `loadbootenv` to load from ext4.  
 > The `mtdparts` option had became `cmdlinepart.mtdparts` (in Debian-land, at least). [StackExchange](https://unix.stackexchange.com/q/554266)
 
 > Hint: press `ctrl + \` then type `c` to quit.
@@ -141,7 +144,7 @@ Try to boot with following commands :
 
     optargs=initramfs.runsize=32M usb-storage.delay_use=0 rootdelay=1
     bootenvroot=/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part1 rw
-    bootenvrootfstype=ext2
+    bootenvrootfstype=ext4
     ubifsloadimage=ubi part rootfs && ubifsmount ubi:rootfs && ubifsload ${loadaddr} /uImage
     # Because of flaky USB, load uImage in two parts with some delays
     usbloadimage=sleep 5 && ext4load usb 0:1 0xa00000 /boot/uImage 0xa00000 && sleep 10 && ext4load usb 0:1 0x1400000 /boot/uImage 0 0xa00000 && setenv loadaddr 0xa00000
@@ -151,13 +154,13 @@ Try to boot with following commands :
 > See `/etc/kernel/postinst.d/zz-local-build-image` created by [`deboot.sh`](scripts/deboot.sh) to know how to build FIT uImage and how it is copied to UBIFS.
 >
 > `initramfs.runsize` 10% by default, fit it to 32M  
-> Because of a bug with `ext2load`, it doesn't work with `pos` argument, use `ext4load` instead...
+> Because of a bug with `ext4load`, it doesn't work with `pos` argument, use `ext4load` instead...
 
 # Persist new u-boot
 
 If everything is OK, copy `u-boot.kwb` to USB key, then:
 
-    usb reset ; ext2load usb 0:1 0x1000000 /u-boot.kwb
+    usb reset ; ext4load usb 0:1 0x1000000 /u-boot.kwb
     nand erase 0x000000 0xe0000
     nand write 0x1000000 0x000000 0xe0000
     reset
@@ -172,7 +175,7 @@ Reset env ands save them:
 
     setenv ethaddr 14:D6:4D:AB:A7:12
     setenv setbootargs 'setenv bootargs console=${console} ${optargs} ${mtdparts} cmdlinepart.${mtdparts} root=${bootenvroot} rootfstype=${bootenvrootfstype}'
-    setenv loadbootenv ext2load usb 0:1 ${loadaddr} ${bootenv}
+    setenv loadbootenv 'ext4load usb 0:1 ${loadaddr} ${bootenv}'
     saveenv
     reset
 
