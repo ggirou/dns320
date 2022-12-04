@@ -113,8 +113,8 @@ cat <<'EOF' > /chroot/etc/fstab
 tmpfs       /tmp    tmpfs   nodev,nosuid,size=32M   0 0
 # Uncomment if you have a second partition on your usb disk
 #/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part2   /mnt/ssd/  ext4    nofail,auto,defaults,relatime     0 0
-/dev/disk/by-path/platform-f1080000.sata-ata-1-part2   /mnt/HD/HD_a2/  ext3    nofail,auto,defaults,relatime     0 0
-/dev/disk/by-path/platform-f1080000.sata-ata-2-part2   /mnt/HD/HD_b2/  ext3    nofail,auto,defaults,relatime     0 0
+/dev/disk/by-path/platform-f1080000.sata-ata-1-part2   /mnt/HD/HD_a2/  ext4    nofail,auto,defaults,relatime     0 0
+/dev/disk/by-path/platform-f1080000.sata-ata-2-part2   /mnt/HD/HD_b2/  ext4    nofail,auto,defaults,relatime     0 0
 EOF
 
 # HDD Hibernate
