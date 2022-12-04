@@ -113,8 +113,17 @@ cat <<'EOF' > /chroot/etc/fstab
 tmpfs       /tmp    tmpfs   nodev,nosuid,size=32M   0 0
 # Uncomment if you have a second partition on your usb disk
 #/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part2   /mnt/ssd/  ext4    nofail,auto,defaults,relatime     0 0
-/dev/disk/by-path/platform-f1080000.sata-ata-1-part2   /mnt/HD/HD_a2/  ext4    nodev,nosuid,nofail,auto,defaults,relatime     0 0
-/dev/disk/by-path/platform-f1080000.sata-ata-2-part2   /mnt/HD/HD_b2/  ext4    nodev,nosuid,nofail,auto,defaults,relatime     0 0
+
+# For disks with only one ext4 partition
+/dev/disk/by-path/platform-f1080000.sata-ata-1-part1   /mnt/hd1/  ext4    nodev,nosuid,nofail,auto,defaults,relatime     0 0
+/dev/disk/by-path/platform-f1080000.sata-ata-2-part1   /mnt/hd2/  ext4    nodev,nosuid,nofail,auto,defaults,relatime     0 0
+
+# For original DNS-320 partitioned disks, use the following instead
+#/dev/disk/by-path/platform-f1080000.sata-ata-1-part2   /mnt/HD/HD_a2/  ext3    nodev,nosuid,nofail,auto,defaults,relatime     0 0
+#/dev/disk/by-path/platform-f1080000.sata-ata-2-part2   /mnt/HD/HD_b2/  ext3    nodev,nosuid,nofail,auto,defaults,relatime     0 0
+
+# If you want to use mergerfs
+#/mnt/hd1/:/mnt/hd2/  /mnt/all/   fuse.mergerfs   defaults,allow_other,use_ino,cache.files=off,dropcacheonclose=true,category.create=mfs,nonempty     0 0
 EOF
 
 # HDD Hibernate
