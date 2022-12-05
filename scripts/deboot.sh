@@ -85,7 +85,7 @@ else
 
     # apt update && apt-cache search "^($(join \| ${packages[@]}))$"
 
-    debootstrap --arch=$arch --variant=minbase --include=$include $suite /chroot $mirror \
+    debootstrap --arch=$arch --include=$include $suite /chroot $mirror \
        || (cp /chroot/debootstrap/debootstrap.log /dist && exit 1)
     tar cf /dist/$suite-$arch.tar -C /chroot/ .
 fi
