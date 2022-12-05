@@ -110,7 +110,7 @@ echo 'FSCKFIX=yes' > /chroot/etc/default/rcS
 cat <<'EOF' > /chroot/etc/fstab
 # <file system>                           <mount point>         <type>  <options>          <dump>  <pass>
 /dev/root   /       auto    noatime                 0 1
-tmpfs       /tmp    tmpfs   nodev,nosuid,size=32M   0 0
+#tmpfs       /tmp    tmpfs   nodev,nosuid,size=32M   0 0
 # Uncomment if you have a second partition on your usb disk
 #/dev/disk/by-path/platform-f1050000.ehci-usb-0:1:1.0-scsi-0:0:0:0-part2   /mnt/ssd/  ext4    nofail,auto,defaults,relatime     0 0
 
@@ -177,8 +177,8 @@ mkimage -f /boot/fit.its /boot/uImage-${version}
 ln -sf /boot/uImage-${version} /boot/uImage
 
 # Copy uImage to Nand UBIFS partition if exists
-mkdir -p /tmp/ubifs
 if [ -c /dev/mtd2 ]; then
+  mkdir -p /tmp/ubifs
   modprobe ubi
   ubiattach /dev/ubi_ctrl -m 2
   mount -t ubifs /dev/ubi0_0 /tmp/ubifs
