@@ -123,7 +123,9 @@ cat <<'EOF' > /chroot/etc/fstab
 #/dev/disk/by-path/platform-f1080000.sata-ata-2-part2   /mnt/HD/HD_b2/  ext3    nodev,nosuid,nofail,auto,defaults,relatime     0 0
 
 # If you want to use mergerfs
-#/mnt/hd1/:/mnt/hd2/  /mnt/all/   fuse.mergerfs   defaults,allow_other,use_ino,cache.files=off,dropcacheonclose=true,category.create=mfs,nonempty     0 0
+# In fstab: nonempty
+# For NFS: noforget,use_ino,inodecalc=path-hash
+#/mnt/hd1/:/mnt/hd2/  /mnt/all/   fuse.mergerfs   defaults,allow_other,use_ino,cache.files=off,dropcacheonclose=true,category.create=mfs,nonempty,noforget,inodecalc=path-hash     0 0
 EOF
 
 # HDD Hibernate
