@@ -1,0 +1,38 @@
+# List of modules that you want to include in your initramfs.
+# They will be loaded at boot time in the order below.
+#
+# Syntax:  module_name [args ...]
+#
+# You must run update-initramfs(8) to effect this change.
+#
+# Examples:
+#
+# raid1
+# sd_mod
+
+# If changed, run the following command:
+# dpkg-reconfigure $(dpkg --get-selections | egrep 'linux-image-[0-9]' | cut -f1)
+# For debugging only (doesn't recreate FIT file)
+# update-initramfs -u -v
+# Check content with:
+# lsinitramfs /boot/initrd.img-$(uname -r)
+
+# Thermal management
+gpio-fan
+kirkwood_thermal
+# SATA
+ehci_orion
+sata_mv
+# UBIFS
+ubi
+# Ethernet
+mv643xx_eth
+marvell
+mvmdio
+ipv6
+# Power / USB buttons
+evdev
+gpio_keys
+# USB disks
+sd_mod
+usb_storage

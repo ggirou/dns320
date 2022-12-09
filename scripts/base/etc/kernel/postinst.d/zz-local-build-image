@@ -1,0 +1,30 @@
+#!/bin/sh -ex
+
+# Build u-boot image whenever a new kernel is installed
+# https://xilinx-wiki.atlassian.net/wiki/spaces/A/pages/18842374/U-Boot+Images#U-BootImages-FlattenedImageTree
+# Quick test from device only
+# /etc/kernel/postinst.d/zz-local-build-image $(uname -r)
+# Full test (from device for UBIFS commands)
+# dpkg-reconfigure $(dpkg --get-selections | egrep 'linux-image-[0-9]' | cut -f1)
+
+# passing the kernel version is required
+version="$1"
+[ -z "${version}" ] && exit 0
+
+cp /usr/lib/linux-image-${version}/kirkwood-dns320.dtb /boot/kirkwood-dns320.dtb
+
+# Need device-tree-compiler
+mkimage -f /boot/fit.its /boot/uImage-${version}
+
+ln -sf /boot/uImage-${version} /boot/uImage
+
+# Copy uImage to Nand UBIFS partition if exists
+# if [ -c /dev/mtd2 ]; then
+#   mkdir -p /tmp/ubifs
+#   modprobe ubi
+#   ubiattach /dev/ubi_ctrl -m 2
+#   mount -t ubifs /dev/ubi0_0 /tmp/ubifs
+#   cp --backup --suffix .old /boot/uImage /tmp/ubifs/
+#   umount /tmp/ubifs
+#   ubidetach /dev/ubi_ctrl -m 2
+# fi

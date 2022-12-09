@@ -4,3 +4,4 @@ tmp/
 u-boot/
 screenlog.*
 private.txt
+*.kwb

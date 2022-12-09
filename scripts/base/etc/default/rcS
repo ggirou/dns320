@@ -1,0 +1,4 @@
+# Autorepair option for fsck on boot https://manpages.debian.org/bullseye/initscripts/rcS.5.en.html
+# Replaced by? https://manpages.debian.org/bullseye/systemd/systemd-fsck.8.en.html
+# Check logs in /run/initramfs/fsck.log
+FSCKFIX=yes
