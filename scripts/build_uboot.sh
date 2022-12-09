@@ -4,7 +4,7 @@
 version=$1
 #target=dns320
 target=$2
-dir=/dist/u-boot
+dir=/tmp/u-boot
 
 if [ ! -d $dir ]; then
   git clone -b $version https://github.com/u-boot/u-boot.git $dir

@@ -13,6 +13,7 @@ services:
     volumes:
       - "./scripts:/scripts"
       - "./dist:/dist"
+      - "./tmp:/tmp"
   tftp:
     image: pghalliday/tftp
     ports:
