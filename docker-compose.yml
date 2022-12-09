@@ -6,15 +6,10 @@ services:
     volumes:
       - "./scripts:/scripts"
       - "./dist:/dist"
-    # command: ["/scripts/deboot.sh", "armel", "squeeze", "http://archive.debian.org/debian/"]
-    # command: ["/scripts/deboot.sh", "armel", "wheezy", "http://archive.debian.org/debian/"]
-    # command: ["/scripts/deboot.sh", "armel", "jessie", "http://ftp.debian.org/debian/"]
-    # command: ["/scripts/deboot.sh", "armel", "stretch", "http://ftp.debian.org/debian/"]
-    # command: ["/scripts/deboot.sh", "armel", "buster", "http://ftp.fr.debian.org/debian/"]
     command: ["/scripts/deboot.sh", "armel", "$DEBIAN_VERSION", "http://ftp.fr.debian.org/debian/"]
   uboot:
     build: .
-    command: ["/scripts/build_uboot.sh", "$UBOOT_VERSION"]
+    command: ["/scripts/build_uboot.sh", "$UBOOT_VERSION", "$UBOOT_TARGET"]
     volumes:
       - "./scripts:/scripts"
       - "./dist:/dist"

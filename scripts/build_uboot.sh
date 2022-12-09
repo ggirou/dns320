@@ -2,6 +2,8 @@
 
 #version=v2022.01
 version=$1
+#target=dns320
+target=$2
 dir=/dist/u-boot
 
 if [ ! -d $dir ]; then
@@ -28,15 +30,17 @@ git config user.email "john@doe.xyz"; git config user.name "John Doe"
 # Apply `EHCI timed out on TD` patch from https://forum.doozan.com/read.php\?3,35295
 # git am --committer-date-is-author-date < /scripts/$version-usbtimeoutfix.patch
 # Apply DNS-320 support patch from https://github.com/avoidik/board_dns320
-git am --committer-date-is-author-date < /scripts/$version-dns320.patch
+git am --committer-date-is-author-date < /scripts/$version-$target.patch
 
 export ARCH=arm CROSS_COMPILE=arm-linux-gnueabi-
 make distclean
-make dns320_config
+make ${target}_config
 # make menuconfig
 
 make -j`nproc` u-boot.kwb
 
 # make cross_tools
 
-cp u-boot.kwb /dist
+cp u-boot.kwb /dist/${target}-u-boot-${version}.kwb
+cp arch/arm/dts/kirkwood-${target}.dtb /dist
+cp tools/kwboot /dist

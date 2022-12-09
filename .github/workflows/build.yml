@@ -2,10 +2,6 @@
 
 name: CI
 
-env:
-  DEBIAN_VERSION: bullseye
-  UBOOT_VERSION: v2022.10
-
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
@@ -42,17 +38,19 @@ jobs:
         # modprobe binfmt_misc
         docker-compose run deboot
 
-    - name: Upload ${{ env.DEBIAN_VERSION }}-armel.final.tar.gz
+    - name: Upload debian
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ env.DEBIAN_VERSION }}-armel.final.tar.gz
-        path: ./dist/${{ env.DEBIAN_VERSION }}-armel.final.tar.gz
+        name: debian
+        path: ./dist/*.final.tar.gz
 
-    - name: Upload uImage
+    - name: Upload kernel files
       uses: actions/upload-artifact@v3
       with:
-        name: uImage
-        path: ./dist/uImage
+        name: kernel-images
+        path: |
+          ./dist/*
+          !./dist/*.tar.gz
 
   # This workflow contains a single job called "build"
   uboot:
@@ -78,8 +76,8 @@ jobs:
       run: |
         docker-compose run uboot
 
-    - name: Upload u-boot.kwb
+    - name: Upload u-boot files
       uses: actions/upload-artifact@v3
       with:
-        name: u-boot.kwb
-        path: ./dist/u-boot.kwb
+        name: u-boot
+        path: ./dist/*
