@@ -105,8 +105,7 @@ cp /chroot/vmlinuz /chroot/initrd.img /chroot/boot/uImage-* /dist
 ls -lah /chroot/boot
 
 cat /chroot/etc/hostname
-cat /chroot/etc/default/locale
-cat /chroot/etc/locale.gen | egrep '^[^#]'
+cat /chroot/etc/default/locale.gen
 cat /chroot/etc/timezone
 
 cat /chroot/etc/fstab
