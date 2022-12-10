@@ -1,0 +1,15 @@
+#!/bin/bash -ex
+
+service nfs-kernel-server stop
+service netatalk stop
+service smbd stop
+
+umount /mnt/*
+
+cat /etc/fstab | egrep '^/dev/disk/' | cut -d ' ' -f1 | xargs fsck -y
+
+mount -a
+
+service smbd start
+service netatalk start
+service nfs-kernel-server start

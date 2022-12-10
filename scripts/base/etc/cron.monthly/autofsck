@@ -1,0 +1,4 @@
+#!/bin/bash -ex
+
+date > /var/log/autofsck.log
+/usr/sbin/nas-fsck &>> /var/log/autofsck.log
