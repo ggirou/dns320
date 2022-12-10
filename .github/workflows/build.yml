@@ -49,8 +49,9 @@ jobs:
       with:
         name: kernel-images
         path: |
-          dist/*
-          !dist/*.tar.gz
+          dist/vmlinuz
+          dist/initrd.img
+          dist/uImage-*
 
   # This workflow contains a single job called "build"
   uboot:
