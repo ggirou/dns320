@@ -42,15 +42,15 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: debian
-        path: ./dist/*.final.tar.gz
+        path: dist/*.final.tar.gz
 
     - name: Upload kernel files
       uses: actions/upload-artifact@v3
       with:
         name: kernel-images
         path: |
-          ./dist/*
-          !*.tar.gz
+          dist/*
+          !dist/*.tar.gz
 
   # This workflow contains a single job called "build"
   uboot:
@@ -80,4 +80,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: u-boot
-        path: ./dist/*
+        path: dist/*
