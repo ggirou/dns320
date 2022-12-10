@@ -50,7 +50,7 @@ jobs:
         name: kernel-images
         path: |
           ./dist/*
-          !./dist/*.tar.gz
+          !*.tar.gz
 
   # This workflow contains a single job called "build"
   uboot:
