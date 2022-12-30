@@ -16,6 +16,7 @@
 #/dev/disk/by-path/platform-f1080000.sata-ata-2-part2   /mnt/hd2/  ext3    nodev,nosuid,nofail,auto,defaults,relatime     0 0
 
 # If you want to use mergerfs
-# In fstab: nonempty
-# For NFS: noforget,use_ino,inodecalc=path-hash
+# wget https://github.com/trapexit/mergerfs/releases/download/2.34.1/mergerfs_2.34.1.debian-bullseye_armel.deb
+# sudo dpkg -i mergerfs_2.34.1.debian-bullseye_armel.deb
+# Options: used in fstab: nonempty; for NFS: noforget,use_ino,inodecalc=path-hash
 #/mnt/hd1/:/mnt/hd2/  /mnt/all/   fuse.mergerfs   defaults,allow_other,use_ino,cache.files=off,dropcacheonclose=true,category.create=mfs,nonempty,noforget,inodecalc=path-hash     0 0
