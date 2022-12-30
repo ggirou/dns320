@@ -28,6 +28,8 @@ wget https://github.com/ggirou/dns-nas-utils/releases/download/v1.5-1/dns-nas-ut
 dpkg -i dns-nas-utils.deb
 rm dns-nas-utils.deb
 
+# Install mergerfs with dependencies then download and install latest version
+apt install mergerfs
 wget https://github.com/trapexit/mergerfs/releases/download/2.34.1/mergerfs_2.34.1.debian-bullseye_armel.deb
 dpkg -i mergerfs_2.34.1.debian-bullseye_armel.deb
 
