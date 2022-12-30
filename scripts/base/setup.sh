@@ -21,12 +21,15 @@ sed -i s'/^FSTYPE=.*$/FSTYPE=ext2,ext3,ext4/' /etc/initramfs-tools/initramfs.con
 # Build u-boot images for already installed kernel
 dpkg-reconfigure $(dpkg --get-selections | egrep 'linux-image-[0-9]' | cut -f1)
 
-# mkdir -p /mnt/HD/HD_a2 /mnt/HD/HD_b2 /mnt/HD_a4 /mnt/HD_b4
-# chmod -R a+rw /mnt/HD/HD_a2 /mnt/HD/HD_b2 /mnt/HD_a4 /mnt/HD_b4
+mkdir -p /mnt/all /mnt/hd1 /mnt/hd2 /mnt/ssd
+chown 1000:1000 /mnt/*
 
 wget https://github.com/ggirou/dns-nas-utils/releases/download/v1.5-1/dns-nas-utils.deb
 dpkg -i dns-nas-utils.deb
 rm dns-nas-utils.deb
+
+wget https://github.com/trapexit/mergerfs/releases/download/2.34.1/mergerfs_2.34.1.debian-bullseye_armel.deb
+dpkg -i mergerfs_2.34.1.debian-bullseye_armel.deb
 
 # Avoid "lockd: cannot monitor" with NFS  https://bugs.launchpad.net/ubuntu/+source/nfs-utils/+bug/1689777
 # systemctl enable rpc-statd
