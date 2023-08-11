@@ -19,4 +19,4 @@
 # wget https://github.com/trapexit/mergerfs/releases/download/2.34.1/mergerfs_2.34.1.debian-bullseye_armel.deb
 # sudo dpkg -i mergerfs_2.34.1.debian-bullseye_armel.deb
 # Options: used in fstab: nonempty; for NFS: noforget,use_ino,inodecalc=path-hash
-#/mnt/hd1/:/mnt/hd2/  /mnt/all/   fuse.mergerfs   defaults,allow_other,use_ino,cache.files=off,dropcacheonclose=true,category.create=epmfs,nonempty,noforget,inodecalc=path-hash     0 0
+#/mnt/hd1/:/mnt/hd2/  /mnt/all/   fuse.mergerfs   defaults,allow_other,use_ino,cache.files=off,dropcacheonclose=true,category.create=mfs,nonempty,noforget,inodecalc=path-hash     0 0
