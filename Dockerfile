@@ -1,4 +1,4 @@
-FROM debian
+FROM debian:bullseye
 
 RUN apt-get update \
     # Packages to debootstrap debian \
