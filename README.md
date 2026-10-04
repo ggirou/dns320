@@ -127,7 +127,7 @@ First, keep current u-boot parameters:
 Try to boot with following commands :
 
     setenv ethaddr 14:D6:4D:AB:A7:12
-    setenv setbootargs 'setenv bootargs console=${console} ${optargs} ${mtdparts} cmdlinepart.${mtdparts} root=${bootenvroot} rootfstype=${bootenvrootfstype}'
+    setenv setbootargs 'setenv bootargs console=${console} ${optargs} cmdlinepart.${mtdparts} root=${bootenvroot} rootfstype=${bootenvrootfstype}'
     setenv loadbootenv 'ext4load usb 0:1 ${loadaddr} ${bootenv}'
     boot
 
@@ -174,7 +174,7 @@ First, keep current new u-boot parameters:
 Reset env ands save them:
 
     setenv ethaddr 14:D6:4D:AB:A7:12
-    setenv setbootargs 'setenv bootargs console=${console} ${optargs} ${mtdparts} cmdlinepart.${mtdparts} root=${bootenvroot} rootfstype=${bootenvrootfstype}'
+    setenv setbootargs 'setenv bootargs console=${console} ${optargs} cmdlinepart.${mtdparts} root=${bootenvroot} rootfstype=${bootenvrootfstype}'
     setenv loadbootenv 'ext4load usb 0:1 ${loadaddr} ${bootenv}'
     saveenv
     reset
