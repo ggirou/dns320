@@ -39,7 +39,7 @@ If you want to:
 > For Debugging/Testing:
 >
 >     docker-compose run deboot bash
->     ./deboot.sh armel trixie http://ftp.fr.debian.org/debian/ openssh-server
+>     ./deboot.sh armel bookworm http://ftp.fr.debian.org/debian/ openssh-server
 
 # Get USB key ready
 
@@ -76,13 +76,13 @@ If you want to:
 
     sudo mkdir -p /mnt/usb/
     sudo mount /dev/sda1 /mnt/usb/
-    sudo tar xzf ~/trixie-armel.final.tar.gz -C /mnt/usb/
+    sudo tar xzf ~/bookworm-armel.final.tar.gz -C /mnt/usb/
     ls -la /mnt/usb/
     sudo umount /mnt/usb/
 
 > Only boot files:
 >
->     sudo tar xzf ~/trixie-armel.final.tar.gz -C /mnt/usb/ ./boot
+>     sudo tar xzf ~/bookworm-armel.final.tar.gz -C /mnt/usb/ ./boot
 
 -----------------------------------------------------------------------
 
