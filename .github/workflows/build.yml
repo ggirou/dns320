@@ -30,13 +30,13 @@ jobs:
         platforms: armel
 
     - name: Build docker image
-      run: docker-compose build
+      run: docker compose build
 
     - name: Debootstrap Debian using docker
       run: |
         docker run --rm --privileged multiarch/qemu-user-static:register
         # modprobe binfmt_misc
-        docker-compose run deboot
+        docker compose run deboot
 
     - name: Upload debian
       uses: actions/upload-artifact@v7
@@ -71,11 +71,11 @@ jobs:
         platforms: armel
 
     - name: Build docker image
-      run: docker-compose build
+      run: docker compose build
 
     - name: Build u-boot using docker
       run: |
-        docker-compose run uboot
+        docker compose run uboot
 
     - name: Upload u-boot files
       uses: actions/upload-artifact@v7
