@@ -30,8 +30,8 @@ rm dns-nas-utils.deb
 
 # Install mergerfs with dependencies then download and install latest version
 apt install -y mergerfs
-wget https://github.com/trapexit/mergerfs/releases/download/2.34.1/mergerfs_2.34.1.debian-bullseye_armel.deb
-dpkg -i mergerfs_2.34.1.debian-bullseye_armel.deb
+#wget https://github.com/trapexit/mergerfs/releases/download/2.42.0/mergerfs_2.42.0.debian-trixie_armel.deb
+#dpkg -i mergerfs_2.42.0.debian-trixie_armel.deb
 
 # Avoid "lockd: cannot monitor" with NFS  https://bugs.launchpad.net/ubuntu/+source/nfs-utils/+bug/1689777
 # systemctl enable rpc-statd
