@@ -34,6 +34,9 @@ If you want to:
 
 # Deboostrap debian
 
+> ⚠️ In Debian Trixie (Debian 13), the EABI ARM (armel) architecture is supported only for upgrades and not new installations. It will be removed in a future release. ⚠️  
+> ⚠️ The legacy `linux-image-marvell` meta-package for older Kirkwood/Orion ARM devices has been dropped. ⚠️
+
     docker-compose run deboot
 
 > For Debugging/Testing:
