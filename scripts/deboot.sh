@@ -19,7 +19,7 @@ packages=(
   # Admin
   cron # process scheduling daemon
   dbus-system-bus-common # simple interprocess messaging system (system bus configuration)
-  dbus-user-session # * simple interprocess messaging system (systemd --user integration)
+  # dbus-user-session # * simple interprocess messaging system (systemd --user integration)
   hdparm # * tune hard disk parameters for high performance
   htop # interactive processes viewer
   iotop # simple top-like I/O monitor
