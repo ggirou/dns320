@@ -20,11 +20,11 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
 
     - name: Set up QEMU
       id: qemu
-      uses: docker/setup-qemu-action@v2
+      uses: docker/setup-qemu-action@v4
       with:
         image: tonistiigi/binfmt:latest
         platforms: armel
@@ -39,13 +39,13 @@ jobs:
         docker-compose run deboot
 
     - name: Upload debian
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v7
       with:
         name: debian
         path: dist/*.final.tar.gz
 
     - name: Upload kernel files
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v7
       with:
         name: kernel-images
         path: |
@@ -61,11 +61,11 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
 
     - name: Set up QEMU
       id: qemu
-      uses: docker/setup-qemu-action@v2
+      uses: docker/setup-qemu-action@v4
       with:
         image: tonistiigi/binfmt:latest
         platforms: armel
@@ -78,7 +78,7 @@ jobs:
         docker-compose run uboot
 
     - name: Upload u-boot files
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v7
       with:
         name: u-boot
         path: dist/*
