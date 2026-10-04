@@ -45,7 +45,7 @@ packages=(
   systemd-timesyncd # minimalistic service to synchronize local time with NTP servers
 
   # Network - Servers
-  netatalk # Basic TCP/IP networking system
+  # netatalk # Basic TCP/IP networking system (removed in bookworm)
   nfs-kernel-server # support for NFS kernel server
   openssh-server # secure shell (SSH) server, for secure access from remote machines
   samba # SMB/CIFS file, print, and login server for Unix
