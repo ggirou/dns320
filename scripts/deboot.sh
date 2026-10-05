@@ -18,8 +18,7 @@ packages=(
 
   # Admin
   cron # process scheduling daemon
-  default-dbus-system-bus # * simple interprocess messaging system (system message bus)
-  dbus-system-bus # * Linux D-Bus Message Broker
+  dbus # * simple interprocess messaging system (system message bus)
   dbus-system-bus-common # * simple interprocess messaging system (system bus configuration)
   # dbus-user-session # * simple interprocess messaging system (systemd --user integration)
   hdparm # * tune hard disk parameters for high performance
