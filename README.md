@@ -227,7 +227,7 @@ Source: https://docs.khadas.com/vim3/LoadImagesWithUBootViaTFTP.html
 If your memory is full, create a swap file (https://linuxize.com/post/create-a-linux-swap-file/).
 Run in your running debian:
 
-    sudo dd if=/dev/zero of=/swapfile bs=1024 count=131072
+    sudo dd if=/dev/zero of=/swapfile bs=1024 count=262144
     sudo chmod 600 /swapfile
     sudo mkswap /swapfile
     sudo swapon /swapfile
